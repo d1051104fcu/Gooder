@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "11218593033",
+    "project_id": "gooder-daabf",
+    "storage_bucket": "gooder-daabf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:11218593033:android:56faaf8b4d465eade61fd8",
+        "android_client_info": {
+          "package_name": "com.example.gooder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCe0K-oWyPaktkeVTIy9YuOd5z3g0qJvDU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
