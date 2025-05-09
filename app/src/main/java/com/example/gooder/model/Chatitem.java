@@ -1,16 +1,25 @@
 package com.example.gooder.model;
 
 public class Chatitem {
+
+    private String chatId;
     private String name;
     private String lastMessage;
     private String time;
     private int avatarResId;
+    private int unreadCount;
 
-    public Chatitem(String name, String lastMessage, String time, int avatarResId) {
+    public Chatitem(String chatId, String name, String lastMessage, String time, int avatarResId, int unreadCount) {
+        this.chatId = chatId;
         this.name = name;
         this.lastMessage = lastMessage;
         this.time = time;
         this.avatarResId = avatarResId;
+        this.unreadCount = unreadCount;
+    }
+
+    public String getChatId(){
+        return chatId;
     }
 
     public String getName() {
@@ -27,5 +36,9 @@ public class Chatitem {
 
     public int getAvatarResId() {
         return avatarResId;
+    }
+
+    public int getUnreadCount() {
+        return unreadCount;
     }
 }

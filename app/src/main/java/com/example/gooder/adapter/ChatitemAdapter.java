@@ -17,9 +17,19 @@ import java.util.List;
 public class ChatitemAdapter extends RecyclerView.Adapter<ChatitemAdapter.ViewHolder> {
 
     private List<Chatitem> chatitemList;
+    private OnItemClickListener listener;
 
     public ChatitemAdapter(List<Chatitem> list){
         this.chatitemList = list;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Chatitem item);
+    }
+
+    public ChatitemAdapter(List<Chatitem> list, OnItemClickListener listener) {
+        this.chatitemList = list;
+        this.listener = listener;
     }
 
     @NonNull
@@ -37,6 +47,20 @@ public class ChatitemAdapter extends RecyclerView.Adapter<ChatitemAdapter.ViewHo
         holder.tvChatitemName.setText(chatitem.getName());
         holder.tvChatitemLastMessage.setText(chatitem.getLastMessage());
         holder.ivChatitemImage.setImageResource(chatitem.getAvatarResId());
+
+        int unreadCount = chatitem.getUnreadCount();
+        if (unreadCount > 0) {
+            holder.tvUnreadCount.setVisibility(View.VISIBLE);
+            holder.tvUnreadCount.setText(String.valueOf(unreadCount));
+        } else {
+            holder.tvUnreadCount.setVisibility(View.GONE);
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(chatitem);
+            }
+        });
     }
 
     @Override
@@ -45,7 +69,7 @@ public class ChatitemAdapter extends RecyclerView.Adapter<ChatitemAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvChatitemName, tvChatitemLastMessage;
+        TextView tvChatitemName, tvChatitemLastMessage, tvUnreadCount;
         ImageView ivChatitemImage;
 
         public ViewHolder(@NonNull View itemView) {
@@ -53,6 +77,7 @@ public class ChatitemAdapter extends RecyclerView.Adapter<ChatitemAdapter.ViewHo
             tvChatitemName = itemView.findViewById(R.id.tv_chatitem_name);
             tvChatitemLastMessage = itemView.findViewById(R.id.tv_chatitem_last_message);
             ivChatitemImage = itemView.findViewById(R.id.iv_chatitem_image);
+            tvUnreadCount = itemView.findViewById(R.id.tv_unread_count);
         }
     }
 }

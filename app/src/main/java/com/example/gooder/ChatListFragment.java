@@ -73,15 +73,29 @@ public class ChatListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_chat, container, false);
+        View view = inflater.inflate(R.layout.fragment_chat_list, container, false);
 
         //這裡取得firebase資料
+
+
         chatitemList = new ArrayList<>();
-        chatitemList.add(new Chatitem("Tom", "hello", "time", R.drawable.setting));
+        chatitemList.add(new Chatitem("chatId", "Tom", "hello", "time", R.drawable.setting, 999));
+        chatitemList.add(new Chatitem("chatId", "Jay", "hi", "time", R.drawable.setting, 99));
+        chatitemList.add(new Chatitem("chatId", "Zoe", "helo", "time", R.drawable.setting, 9));
+        chatitemList.add(new Chatitem("chatId", "May", "A", "time", R.drawable.setting, 0));
 
         rvChatlist = view.findViewById(R.id.rv_chatlist);
         rvChatlist.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ChatitemAdapter(chatitemList);
+        adapter = new ChatitemAdapter(chatitemList, chatitem -> {
+            // 切換到 ChatRoomFragment（聊天室頁）
+            ChatRoomFragment chatRoomFragment = ChatRoomFragment.newInstance(chatitem.getName());
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_main, chatRoomFragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
+
         rvChatlist.setAdapter(adapter);
 
         return view;
