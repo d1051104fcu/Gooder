@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         bottomNav = findViewById(R.id.bottom_nav);
-        chatFragment = ChatFragment.newInstance("", "");
+        chatFragment = ChatListFragment.newInstance("", "");
         settingFragment = SettingFragment.newInstance("", "");
 
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {

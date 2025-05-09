@@ -1,0 +1,58 @@
+package com.example.gooder.adapter;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.gooder.R;
+import com.example.gooder.model.Chatitem;
+
+import java.util.List;
+
+public class ChatitemAdapter extends RecyclerView.Adapter<ChatitemAdapter.ViewHolder> {
+
+    private List<Chatitem> chatitemList;
+
+    public ChatitemAdapter(List<Chatitem> list){
+        this.chatitemList = list;
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_chatlist, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Chatitem chatitem = chatitemList.get(position);
+
+        holder.tvChatitemName.setText(chatitem.getName());
+        holder.tvChatitemLastMessage.setText(chatitem.getLastMessage());
+        holder.ivChatitemImage.setImageResource(chatitem.getAvatarResId());
+    }
+
+    @Override
+    public int getItemCount() {
+        return chatitemList.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView tvChatitemName, tvChatitemLastMessage;
+        ImageView ivChatitemImage;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvChatitemName = itemView.findViewById(R.id.tv_chatitem_name);
+            tvChatitemLastMessage = itemView.findViewById(R.id.tv_chatitem_last_message);
+            ivChatitemImage = itemView.findViewById(R.id.iv_chatitem_image);
+        }
+    }
+}
