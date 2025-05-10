@@ -19,10 +19,6 @@ public class ChatItemAdapter extends RecyclerView.Adapter<ChatItemAdapter.ViewHo
     private List<ChatItem> chatItemList;
     private OnItemClickListener listener;
 
-    public ChatItemAdapter(List<ChatItem> list){
-        this.chatItemList = list;
-    }
-
     public interface OnItemClickListener {
         void onItemClick(ChatItem item);
     }
@@ -42,23 +38,31 @@ public class ChatItemAdapter extends RecyclerView.Adapter<ChatItemAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ChatItem chatitem = chatItemList.get(position);
+        ChatItem chatItem = chatItemList.get(position);
 
-        holder.tvChatitemName.setText(chatitem.getName());
-        holder.tvChatitemLastMessage.setText(chatitem.getLastMessage());
-        holder.ivChatitemImage.setImageResource(chatitem.getAvatarResId());
+        holder.tvChatitemName.setText(chatItem.getName());
+        holder.tvChatitemLastMessage.setText(chatItem.getLastMessage());
+        holder.ivChatitemImage.setImageResource(chatItem.getAvatarResId());
 
-        int unreadCount = chatitem.getUnreadCount();
+        int unreadCount = chatItem.getUnreadCount();
         if (unreadCount > 0) {
             holder.tvUnreadCount.setVisibility(View.VISIBLE);
-            holder.tvUnreadCount.setText(String.valueOf(unreadCount));
-        } else {
+            String unreadCountStr;
+            if(unreadCount < 99){
+                unreadCountStr = String.valueOf(unreadCount);
+            }
+            else {
+                unreadCountStr = "99";
+            }
+            holder.tvUnreadCount.setText(unreadCountStr);
+        }
+        else {
             holder.tvUnreadCount.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onItemClick(chatitem);
+                listener.onItemClick(chatItem);
             }
         });
     }
@@ -80,4 +84,10 @@ public class ChatItemAdapter extends RecyclerView.Adapter<ChatItemAdapter.ViewHo
             tvUnreadCount = itemView.findViewById(R.id.tv_unread_count);
         }
     }
+
+    public void updateList(List<ChatItem> newList) {
+        chatItemList = newList;
+        notifyDataSetChanged();
+    }
+
 }

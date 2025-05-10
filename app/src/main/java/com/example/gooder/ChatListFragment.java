@@ -6,15 +6,25 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.gooder.adapter.ChatItemAdapter;
 import com.example.gooder.model.ChatItem;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,6 +36,9 @@ public class ChatListFragment extends Fragment {
     private RecyclerView rvChatlist;
     private ChatItemAdapter adapter;
     private List<ChatItem> chatItemList;
+    private FirebaseFirestore db;
+
+    private final String TAG = "ChatListFragment";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -76,13 +89,96 @@ public class ChatListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_chat_list, container, false);
 
         //這裡取得firebase資料
-
+        FirebaseApp.initializeApp(getContext());
+        db = FirebaseFirestore.getInstance();
+        //String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid(); //TODO 之後要改成真正的使用者
+        String currentUserId = "j9HCU31IAaYNJv2wP5dKfWMQ3KD2";
 
         chatItemList = new ArrayList<>();
-        chatItemList.add(new ChatItem("chatId", "Tom", "hello", "time", R.drawable.setting, 999));
-        chatItemList.add(new ChatItem("chatId", "Jay", "hi", "time", R.drawable.setting, 99));
-        chatItemList.add(new ChatItem("chatId", "Zoe", "helo", "time", R.drawable.setting, 9));
-        chatItemList.add(new ChatItem("chatId", "May", "A", "time", R.drawable.setting, 0));
+
+        // 取得所有聊天對話（chats 集合）
+        db.collection("Chats")
+                .get()
+                .addOnSuccessListener(chatSnapshots -> {
+                    Log.d(TAG, "找到 " + chatSnapshots.size() + " 個聊天室.");
+
+                    AtomicInteger processedCount = new AtomicInteger(0);
+                    int totalChats = chatSnapshots.size();
+
+                    for (DocumentSnapshot chatDoc : chatSnapshots) {
+                        String chater1 = chatDoc.getString("chater1_id");
+                        String chater2 = chatDoc.getString("chater2_id");
+
+                        // 判斷目前使用者是否為此聊天室的其中一人
+                        if (currentUserId.equals(chater1) || currentUserId.equals(chater2)) {
+                            String anotherChaterId = currentUserId.equals(chater1) ? chater2 : chater1;
+                            String chatroomId = chatDoc.getId();
+
+                            // 讀取聊天室內所有訊息（按時間遞減排序）
+                            db.collection("Chats")
+                                    .document(chatroomId)
+                                    .collection("chat")
+                                    .orderBy("time", Query.Direction.DESCENDING)
+                                    .get()
+                                    .addOnSuccessListener(messageSnapshots -> {
+
+                                        if (!messageSnapshots.isEmpty()) {
+                                            // 取得最新一則訊息（排在最前面）
+                                            DocumentSnapshot lastMessageDoc = messageSnapshots.getDocuments().get(0);
+
+                                            String lastMsg = lastMessageDoc.getString("message");
+                                            Timestamp time = lastMessageDoc.getTimestamp("time");
+                                            String senderId = lastMessageDoc.getString("sender_id");
+
+                                            // 計算未讀訊息數量
+                                            int unreadCount = 0;
+
+                                            for (DocumentSnapshot msgDoc : messageSnapshots) {
+                                                Boolean isRead = msgDoc.getBoolean("isReaded");
+                                                Log.d(TAG, "是否已讀: "+isRead);
+
+                                                // 確保senderId != null，並且不是當前用戶，且訊息未讀
+                                                if (senderId != null && !senderId.equals(currentUserId)) {
+                                                    // 如果isRead為null，視為未讀，或者isRead為false，也視為未讀
+                                                    if (isRead == null || !isRead) {
+                                                        unreadCount++;
+                                                    }
+                                                }
+                                            }
+
+
+                                            Log.d(TAG, "未讀訊息數: "+unreadCount);
+                                            ChatItem chatItem = new ChatItem(
+                                                    chatroomId,
+                                                    anotherChaterId, //TODO 改成對方的名字
+                                                    lastMsg,
+                                                    time,
+                                                    R.drawable.setting, //TODO 改成對方的頭像
+                                                    unreadCount
+                                            );
+
+                                            chatItemList.add(chatItem);
+
+                                        }
+
+                                        // 檢查是否所有聊天室都處理完
+                                        if (processedCount.incrementAndGet() == totalChats) {
+                                            Collections.sort(chatItemList, (a, b) -> b.getTime().compareTo(a.getTime()));
+                                            Log.d(TAG, "更新聊天室列表");
+                                            adapter.updateList(chatItemList);
+                                        }
+                                    });
+                        }
+                        else {
+                            if (processedCount.incrementAndGet() == totalChats) {
+                                Collections.sort(chatItemList, (a, b) -> b.getTime().compareTo(a.getTime()));
+                                Log.d(TAG, "更新聊天室列表");
+                                adapter.updateList(chatItemList);
+                            }
+                        }
+                    }
+                });
+
 
         rvChatlist = view.findViewById(R.id.rv_chatlist);
         rvChatlist.setLayoutManager(new LinearLayoutManager(getContext()));

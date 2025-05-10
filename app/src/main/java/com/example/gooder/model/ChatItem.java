@@ -1,15 +1,17 @@
 package com.example.gooder.model;
 
+import com.google.firebase.Timestamp;
+
 public class ChatItem {
 
     private String chatId;
     private String name;
     private String lastMessage;
-    private String time;
+    private Timestamp time;
     private int avatarResId;
     private int unreadCount;
 
-    public ChatItem(String chatId, String name, String lastMessage, String time, int avatarResId, int unreadCount) {
+    public ChatItem(String chatId, String name, String lastMessage, Timestamp time, int avatarResId, int unreadCount) {
         this.chatId = chatId;
         this.name = name;
         this.lastMessage = lastMessage;
@@ -30,8 +32,12 @@ public class ChatItem {
         return lastMessage;
     }
 
-    public String getTime() {
+    public Timestamp getTime() {
         return time;
+    }
+
+    public void setTime(Timestamp time){
+        this.time = time;
     }
 
     public int getAvatarResId() {
