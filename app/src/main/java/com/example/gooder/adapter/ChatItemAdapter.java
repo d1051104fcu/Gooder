@@ -10,25 +10,25 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gooder.R;
-import com.example.gooder.model.Chatitem;
+import com.example.gooder.model.ChatItem;
 
 import java.util.List;
 
-public class ChatitemAdapter extends RecyclerView.Adapter<ChatitemAdapter.ViewHolder> {
+public class ChatItemAdapter extends RecyclerView.Adapter<ChatItemAdapter.ViewHolder> {
 
-    private List<Chatitem> chatitemList;
+    private List<ChatItem> chatItemList;
     private OnItemClickListener listener;
 
-    public ChatitemAdapter(List<Chatitem> list){
-        this.chatitemList = list;
+    public ChatItemAdapter(List<ChatItem> list){
+        this.chatItemList = list;
     }
 
     public interface OnItemClickListener {
-        void onItemClick(Chatitem item);
+        void onItemClick(ChatItem item);
     }
 
-    public ChatitemAdapter(List<Chatitem> list, OnItemClickListener listener) {
-        this.chatitemList = list;
+    public ChatItemAdapter(List<ChatItem> list, OnItemClickListener listener) {
+        this.chatItemList = list;
         this.listener = listener;
     }
 
@@ -42,7 +42,7 @@ public class ChatitemAdapter extends RecyclerView.Adapter<ChatitemAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Chatitem chatitem = chatitemList.get(position);
+        ChatItem chatitem = chatItemList.get(position);
 
         holder.tvChatitemName.setText(chatitem.getName());
         holder.tvChatitemLastMessage.setText(chatitem.getLastMessage());
@@ -65,7 +65,7 @@ public class ChatitemAdapter extends RecyclerView.Adapter<ChatitemAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return chatitemList.size();
+        return chatItemList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

@@ -1,6 +1,6 @@
 package com.example.gooder.model;
 
-public class Chatitem {
+public class ChatItem {
 
     private String chatId;
     private String name;
@@ -9,7 +9,7 @@ public class Chatitem {
     private int avatarResId;
     private int unreadCount;
 
-    public Chatitem(String chatId, String name, String lastMessage, String time, int avatarResId, int unreadCount) {
+    public ChatItem(String chatId, String name, String lastMessage, String time, int avatarResId, int unreadCount) {
         this.chatId = chatId;
         this.name = name;
         this.lastMessage = lastMessage;

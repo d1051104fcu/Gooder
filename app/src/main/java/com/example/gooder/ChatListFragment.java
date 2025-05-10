@@ -10,8 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.gooder.adapter.ChatitemAdapter;
-import com.example.gooder.model.Chatitem;
+import com.example.gooder.adapter.ChatItemAdapter;
+import com.example.gooder.model.ChatItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +24,8 @@ import java.util.List;
 public class ChatListFragment extends Fragment {
 
     private RecyclerView rvChatlist;
-    private ChatitemAdapter adapter;
-    private List<Chatitem> chatitemList;
+    private ChatItemAdapter adapter;
+    private List<ChatItem> chatItemList;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -78,17 +78,17 @@ public class ChatListFragment extends Fragment {
         //這裡取得firebase資料
 
 
-        chatitemList = new ArrayList<>();
-        chatitemList.add(new Chatitem("chatId", "Tom", "hello", "time", R.drawable.setting, 999));
-        chatitemList.add(new Chatitem("chatId", "Jay", "hi", "time", R.drawable.setting, 99));
-        chatitemList.add(new Chatitem("chatId", "Zoe", "helo", "time", R.drawable.setting, 9));
-        chatitemList.add(new Chatitem("chatId", "May", "A", "time", R.drawable.setting, 0));
+        chatItemList = new ArrayList<>();
+        chatItemList.add(new ChatItem("chatId", "Tom", "hello", "time", R.drawable.setting, 999));
+        chatItemList.add(new ChatItem("chatId", "Jay", "hi", "time", R.drawable.setting, 99));
+        chatItemList.add(new ChatItem("chatId", "Zoe", "helo", "time", R.drawable.setting, 9));
+        chatItemList.add(new ChatItem("chatId", "May", "A", "time", R.drawable.setting, 0));
 
         rvChatlist = view.findViewById(R.id.rv_chatlist);
         rvChatlist.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ChatitemAdapter(chatitemList, chatitem -> {
+        adapter = new ChatItemAdapter(chatItemList, chatItem -> {
             // 切換到 ChatRoomFragment（聊天室頁）
-            ChatRoomFragment chatRoomFragment = ChatRoomFragment.newInstance(chatitem.getName());
+            ChatRoomFragment chatRoomFragment = ChatRoomFragment.newInstance(chatItem.getName());
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_main, chatRoomFragment)
