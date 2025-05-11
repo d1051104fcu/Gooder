@@ -1,12 +1,22 @@
 package com.example.gooder;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +24,14 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class SettingFragment extends Fragment {
+
+    private final String TAG = "SettingFragment";
+
+    private FirebaseAuth auth;
+
+    private TextView tvSettingUserName;
+    private Switch switchDarkMode;
+    private Button btnSettingSignOut;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -58,7 +76,47 @@ public class SettingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_setting, container, false);
+        View view = inflater.inflate(R.layout.fragment_setting, container, false);
+
+        auth = FirebaseAuth.getInstance();
+
+        tvSettingUserName = view.findViewById(R.id.tv_setting_user_name);
+        switchDarkMode = view.findViewById(R.id.switch_dark_mode);
+        btnSettingSignOut = view.findViewById(R.id.btn_setting_sign_out);
+
+        if (auth.getCurrentUser() != null) {
+            String name = auth.getCurrentUser().getDisplayName();
+            Log.d(TAG, "使用者ID:"+auth.getCurrentUser().getUid());
+            if (name != null && !name.isEmpty()) {
+                tvSettingUserName.setText("Hello " + name);
+            } else {
+                tvSettingUserName.setText("Hello " + auth.getCurrentUser().getEmail());
+            }
+        }
+
+        SharedPreferences prefs = requireActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
+        boolean darkMode = prefs.getBoolean("dark_mode", false);
+        switchDarkMode.setChecked(darkMode);
+
+        switchDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int mode = isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
+            AppCompatDelegate.setDefaultNightMode(mode);
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("dark_mode", isChecked);
+            editor.apply();
+        });
+
+        btnSettingSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                auth.signOut();
+                Toast.makeText(getContext(), "已登出", Toast.LENGTH_SHORT).show();
+                //TODO 跳轉頁面
+            }
+        });
+
+
+        return view;
     }
 }

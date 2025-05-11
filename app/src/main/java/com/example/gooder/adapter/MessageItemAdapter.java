@@ -42,7 +42,9 @@ public class MessageItemAdapter extends RecyclerView.Adapter<MessageItemAdapter.
         // 判斷是否是本人發送，變更背景與對齊
         if (messageItem.getSenderId().equals(currentUserId)) {
             holder.tvMessage.setBackgroundResource(R.drawable.bg_message_self);
+            ((LinearLayout.LayoutParams) holder.messageItemContainer.getLayoutParams()).gravity = Gravity.END;
             ((LinearLayout.LayoutParams) holder.messageContainer.getLayoutParams()).gravity = Gravity.END;
+            ((LinearLayout.LayoutParams) holder.timeIsReadedContainer.getLayoutParams()).gravity = Gravity.END;
             if(messageItem.isReaded()){
                 holder.tvIsReaded.setText("已讀");
                 holder.tvIsReaded.setVisibility(View.VISIBLE);
@@ -52,7 +54,9 @@ public class MessageItemAdapter extends RecyclerView.Adapter<MessageItemAdapter.
             }
         } else {
             holder.tvMessage.setBackgroundResource(R.drawable.bg_message_other);
+            ((LinearLayout.LayoutParams) holder.messageItemContainer.getLayoutParams()).gravity = Gravity.START;
             ((LinearLayout.LayoutParams) holder.messageContainer.getLayoutParams()).gravity = Gravity.START;
+            ((LinearLayout.LayoutParams) holder.timeIsReadedContainer.getLayoutParams()).gravity = Gravity.START;
             holder.tvIsReaded.setVisibility(View.GONE);
         }
     }
@@ -64,14 +68,16 @@ public class MessageItemAdapter extends RecyclerView.Adapter<MessageItemAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvMessage, tvMessageTime, tvIsReaded;
-        LinearLayout messageContainer;
+        LinearLayout messageItemContainer, messageContainer, timeIsReadedContainer;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvMessage = itemView.findViewById(R.id.tv_message_text);
             tvMessageTime = itemView.findViewById(R.id.tv_message_time);
             tvIsReaded = itemView.findViewById(R.id.tv_message_is_readed);
+            messageItemContainer = itemView.findViewById(R.id.message_item_container);
             messageContainer = itemView.findViewById(R.id.message_container);
+            timeIsReadedContainer = itemView.findViewById(R.id.time_is_readed_container);
         }
     }
 }

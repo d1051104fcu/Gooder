@@ -5,14 +5,16 @@ import com.google.firebase.Timestamp;
 public class ChatItem {
 
     private String chatId;
+    private String anotherChaterId;
     private String name;
     private String lastMessage;
     private Timestamp time;
     private int avatarResId;
     private int unreadCount;
 
-    public ChatItem(String chatId, String name, String lastMessage, Timestamp time, int avatarResId, int unreadCount) {
+    public ChatItem(String chatId, String anotherChaterId, String name, String lastMessage, Timestamp time, int avatarResId, int unreadCount) {
         this.chatId = chatId;
+        this.anotherChaterId = anotherChaterId;
         this.name = name;
         this.lastMessage = lastMessage;
         this.time = time;
@@ -23,6 +25,8 @@ public class ChatItem {
     public String getChatId(){
         return chatId;
     }
+
+    public String getAnotherChaterId(){return anotherChaterId;}
 
     public String getName() {
         return name;

@@ -6,16 +6,16 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class MessageItem {
+    private boolean isReaded;
     private String message;
     private String sender_id;
     private Timestamp time;
-    private boolean isReaded;
 
-    public MessageItem(String message, String sender_id, Timestamp time, boolean isReaded) {
+    public MessageItem(boolean isReaded, String message, String sender_id, Timestamp time) {
+        this.isReaded = isReaded;
         this.message = message;
         this.sender_id = sender_id;
         this.time = time;
-        this.isReaded = isReaded;
     }
 
     public String getMessage() {
@@ -36,7 +36,8 @@ public class MessageItem {
 
     public String getFormattedTime() {
         // 顯示用：轉成字串
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        //SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault());
         return sdf.format(time.toDate());
     }
 }
