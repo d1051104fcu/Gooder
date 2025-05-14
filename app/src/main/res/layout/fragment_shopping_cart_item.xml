@@ -25,7 +25,7 @@
             android:layout_height="80dp"
             android:layout_marginStart="8dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/notFound" />
+            android:src="@drawable/notfound" />
 
         <LinearLayout
             android:layout_width="0dp"
