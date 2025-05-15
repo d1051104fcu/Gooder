@@ -2,8 +2,11 @@ package com.example.gooder;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -26,6 +29,10 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private Fragment chatFragment;
     private Fragment settingFragment;
+
+    // 基江
+    private Fragment homeFragment;
+    //
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,15 +58,19 @@ public class MainActivity extends AppCompatActivity {
         chatFragment = ChatListFragment.newInstance("", "");
         settingFragment = SettingFragment.newInstance("", "");
 
+        // 基江
+        homeFragment = HomeFragment.newInstance("", "");
+        //
+
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
                 if(itemId == R.id.menu_chat){
-                    setCurrentFrament(chatFragment);
+                    setCurrentFragment(chatFragment);
                 }
                 else if(itemId == R.id.menu_setting){
-                    setCurrentFrament(settingFragment);
+                    setCurrentFragment(settingFragment);
                 }
                 else if(itemId == R.id.menu_post){
 
@@ -67,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
                 else if(itemId == R.id.menu_category){
 
                 }
-                else{
+                else{ // itemId == R.id.menu_home / 基江 : an object in menu > bottom_nav_menu
+                    setCurrentFragment(homeFragment);
 
                 }
                 return true;
@@ -75,10 +87,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setCurrentFrament(Fragment fragment){
+    private void setCurrentFragment(Fragment fragment){
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_main, fragment)
                 .commit();
+
     }
 }
