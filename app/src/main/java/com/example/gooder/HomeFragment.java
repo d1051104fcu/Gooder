@@ -1,12 +1,24 @@
 package com.example.gooder;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.SearchView;
+import android.widget.Spinner;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,7 +70,88 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        SearchView searchView = view.findViewById(R.id.search);
+        // 처음부터 검색창 펼치기 (아이콘화 해제)
+//        searchView.setIconified(false);
+
+        // SearchView 내부의 AutoCompleteTextView 찾기
+        int autoCompleteId = searchView.getContext().getResources()
+                .getIdentifier("android:id/search_src_text", null, null);
+        AutoCompleteTextView searchAutoComplete = searchView.findViewById(autoCompleteId);
+
+        // 저장된 검색 기록 불러오기
+        Set<String> historySet = getSearchHistory(requireContext());
+        List<String> historyList = new ArrayList<>(historySet);
+
+        // 어댑터 세팅
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_dropdown_item_1line, historyList);
+        searchAutoComplete.setAdapter(adapter);
+
+        // 검색어 제출 시 저장하기
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                saveSearchQuery(requireContext(), query);
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+
+
+//        searchView.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
+//            if (hasFocus) {
+//                recyclerView.setVisibility(View.VISIBLE);
+//                loadSearchHistoryAndShow();
+//            } else {
+//                recyclerView.setVisibility(View.GONE);
+//            }
+//        });
+//
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                saveSearchQuery(query);
+//                recyclerView.setVisibility(View.GONE);
+//                // 실제 검색 동작 수행
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                // 텍스트 변화 시에도 검색 기록 필터링 가능
+//                filterSearchHistory(newText);
+//                return false;
+//            }
+//        });
+
+        Spinner citySpinner = view.findViewById(R.id.spinner_city);
+        ArrayAdapter<CharSequence> cityAdapter = ArrayAdapter.createFromResource(requireContext(), R.array.city_array, android.R.layout.simple_spinner_item);
+        citySpinner.setAdapter(cityAdapter);
+
+        return view;
+    }
+
+    // 검색 기록 저장 함수
+    private void saveSearchQuery(Context context, String query) {
+        SharedPreferences prefs = context.getSharedPreferences("search_prefs", Context.MODE_PRIVATE);
+        Set<String> oldHistory = prefs.getStringSet("search_history", new LinkedHashSet<>());
+        // 복사본 생성 (원본을 직접 수정하지 않음)
+        Set<String> newHistory = new LinkedHashSet<>(oldHistory);
+        newHistory.add(query);
+        prefs.edit().putStringSet("search_history", newHistory).apply();
+    }
+
+    // 검색 기록 불러오기 함수
+    private Set<String> getSearchHistory(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("search_prefs", Context.MODE_PRIVATE);
+        return prefs.getStringSet("search_history", new LinkedHashSet<>());
     }
 }
