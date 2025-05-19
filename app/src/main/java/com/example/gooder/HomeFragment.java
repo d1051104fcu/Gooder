@@ -1,12 +1,16 @@
 package com.example.gooder;
 
+// 수동 추가 ViewPager2, Handler 不知道爲啥不能自動import
+import androidx.viewpager2.widget.ViewPager2;
+import android.os.Handler;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +19,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.SearchView;
 import android.widget.Spinner;
 
+import com.example.gooder.adapter.ImageSliderAdapter;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +33,13 @@ import java.util.Set;
  * create an instance of this fragment.
  */
 public class HomeFragment extends Fragment {
+
+    // advertisement => ViewPager2
+    private ViewPager2 viewPager;
+    private Handler sliderHandler = new Handler();
+    private Runnable sliderRunnable;
+    private int currentPage = 0;
+    private List<Integer> imageList;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -103,6 +117,28 @@ public class HomeFragment extends Fragment {
                 return false;
             }
         });
+
+        // ViewPager2와 어댑터 설정
+        viewPager = view.findViewById(R.id.viewPager);
+        imageList = Arrays.asList(
+                R.drawable.img1_test,
+                R.drawable.img2_test,
+                R.drawable.img3_test
+        );
+        ImageSliderAdapter imageSliderAdapter = new ImageSliderAdapter(imageList);
+        viewPager.setAdapter(imageSliderAdapter);
+
+        // Handler로 자동 슬라이드 설정
+        sliderHandler = new Handler(Looper.getMainLooper());
+        sliderRunnable = new Runnable() {
+            @Override
+            public void run() {
+                currentPage = (currentPage + 1) % imageList.size();
+                viewPager.setCurrentItem(currentPage, true);
+                sliderHandler.postDelayed(this, 3000); // 3초마다 슬라이드
+            }
+        };
+        sliderHandler.postDelayed(sliderRunnable, 3000);
 
 
 
