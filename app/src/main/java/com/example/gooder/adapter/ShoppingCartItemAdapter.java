@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gooder.R;
+import com.example.gooder.listener.OnItemCheckChangedListener;
 import com.example.gooder.model.ShoppingCartItem;
 
 import java.util.List;
@@ -19,8 +20,11 @@ import java.util.List;
 
 public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartItemAdapter.ViewHolder> {
     List<ShoppingCartItem> shoppingCartItemList;
-    public ShoppingCartItemAdapter(List<ShoppingCartItem> list){
+    private OnItemCheckChangedListener listener;
+
+    public ShoppingCartItemAdapter(List<ShoppingCartItem> list, OnItemCheckChangedListener listener){
         this.shoppingCartItemList = list;
+        this.listener = listener;
     }
 
     @NonNull
@@ -38,6 +42,35 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
         holder.productName.setText(shoppingCartItem.getName());
         holder.productPrice.setText("$" + shoppingCartItem.getPrice());
         holder.productCount.setText(shoppingCartItem.getCount());
+        holder.isChoose.setChecked(shoppingCartItem.isChoose());
+        holder.divider.setVisibility(position == shoppingCartItemList.size() - 1 ? View.GONE : View.VISIBLE);
+
+        holder.isChoose.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            shoppingCartItem.setIsChoose(isChecked);
+            if (listener != null){
+                listener.onItemCheckChangedListener();
+            }
+
+            notifyItemChanged(holder.getAdapterPosition());
+        });
+
+        holder.plus.setOnClickListener(v -> {
+            shoppingCartItem.setCount(shoppingCartItem.getCount() + 1);
+            holder.productCount.setText(shoppingCartItem.getCount());
+            notifyItemChanged(holder.getAdapterPosition());
+        });
+
+        holder.minus.setOnClickListener(v -> {
+            if (shoppingCartItem.getCount() > 1){
+                shoppingCartItem.setCount(shoppingCartItem.getCount() - 1);
+                holder.productCount.setText(shoppingCartItem.getCount());
+                notifyItemChanged(holder.getAdapterPosition());
+            }else {
+                // Need to fix: Remove from firebase
+                shoppingCartItemList.remove(shoppingCartItem);
+                notifyItemRemoved(holder.getAdapterPosition());
+            }
+        });
     }
 
     @Override
@@ -50,6 +83,7 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
         ImageView imgProduct;
         TextView productName, productPrice, productCount;
         Button minus, plus;
+        View divider;
 
         public ViewHolder(@NonNull View itemView){
             super(itemView);
@@ -60,6 +94,16 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
             productCount = itemView.findViewById(R.id.shoppingCart_ProductCount_number);
             minus = itemView.findViewById(R.id.shoppingCart_ProductCount_minus);
             plus = itemView.findViewById(R.id.shoppingCart_ProductCount_plus);
+            divider = itemView.findViewById(R.id.shoppingCart_divider);
         }
+    }
+
+    public boolean isAllChecked(){
+        for (ShoppingCartItem item : shoppingCartItemList){
+            if (!item.isChoose()){
+                return false;
+            }
+        }
+        return true;
     }
 }

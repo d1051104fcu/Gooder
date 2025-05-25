@@ -58,14 +58,10 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()){
-                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    //FirebaseUser user = mAuth.getCurrentUser();
 
-                                    /*
-                                    // Fix: Nav to Home screen
-
-                                    startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+                                    startActivity(new Intent(LoginActivity.this, HomeFragment.class));
                                     finish();
-                                     */
                                 }else {
                                     Toast.makeText(LoginActivity.this, "登入失敗" + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
                                 }

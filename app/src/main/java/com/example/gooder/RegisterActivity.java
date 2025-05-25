@@ -86,12 +86,8 @@ public class RegisterActivity extends AppCompatActivity {
                                                         });
                                             }
 
-                                            /*
-                                            // Fix: Nav to Home screen
-
-                                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                            startActivity(new Intent(RegisterActivity.this, HomeFragment.class));
                                             finish();
-                                             */
                                         }else {
                                             Toast.makeText(RegisterActivity.this, "註冊失敗" + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
                                         }

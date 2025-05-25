@@ -7,12 +7,12 @@ public class ShoppingCartItem {
     private int count;
     private boolean isChoose;
 
-    public ShoppingCartItem(String name, String price, int imgId, int count, boolean isChoose){
+    public ShoppingCartItem(String name, String price, int imgId, int count){
         this.name = name;
         this.price = price;
         this.imgId = imgId;
         this.count = count;
-        this.isChoose = isChoose;
+        this.isChoose = false;
     }
 
     public String getName() {
@@ -26,12 +26,21 @@ public class ShoppingCartItem {
     public int getImgId() {
         return imgId;
     }
+    public void setImgId(int imgId) {
+        this.imgId = imgId;
+    }
 
     public int getCount() {
         return count;
     }
+    public void setCount(int count) {
+        this.count = count;
+    }
 
     public boolean isChoose() {
         return isChoose;
+    }
+    public void setIsChoose(boolean isChoose) {
+        this.isChoose = isChoose;
     }
 }
