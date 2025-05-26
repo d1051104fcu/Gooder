@@ -1,5 +1,6 @@
 package com.example.gooder;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private Fragment homeFragment;
     //
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         // 基江
         homeFragment = HomeFragment.newInstance("", "");
         //
+
 
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override

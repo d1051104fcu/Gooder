@@ -13,43 +13,45 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gooder.R;
 import com.example.gooder.listener.OnItemCheckChangedListener;
-import com.example.gooder.model.ShoppingCart;
+import com.example.gooder.model.ShoppingCartShop;
 import com.example.gooder.model.ShoppingCartItem;
 
 import java.util.List;
 
-public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapter.ViewHolder> {
-    List<ShoppingCart> shoppingCartList;
+public class ShoppingCartShopAdapter extends RecyclerView.Adapter<ShoppingCartShopAdapter.ViewHolder> {
+    List<ShoppingCartShop> shoppingCartShopList;
+    private OnItemCheckChangedListener listener;
 
-    public ShoppingCartAdapter(List<ShoppingCart> list){
-        this.shoppingCartList = list;
+    public ShoppingCartShopAdapter(List<ShoppingCartShop> list, OnItemCheckChangedListener listener){
+        this.shoppingCartShopList = list;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_shopping_cart, parent, false);
+                .inflate(R.layout.fragment_shopping_cart_shop, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ShoppingCart shoppingCart = shoppingCartList.get(position);
-        holder.isChoose.setChecked(shoppingCart.isChoose());
-        holder.shopName.setText(shoppingCart.getShopName());
+        ShoppingCartShop shoppingCartShop = shoppingCartShopList.get(position);
+        holder.isChoose.setChecked(shoppingCartShop.isChoose());
+        holder.shopName.setText(shoppingCartShop.getShopName());
 
         // isExpand
         holder.isExpand.setImageResource(
-                shoppingCart.isExpand() ? R.drawable.arrow_drop_up_24px : R.drawable.arrow_drop_down_24px
+                shoppingCartShop.isExpand() ? R.drawable.arrow_drop_up_24px : R.drawable.arrow_drop_down_24px
         );
         holder.isExpand.setOnClickListener(v -> {
-            shoppingCart.setIsExpand(!shoppingCart.isExpand());
+            shoppingCartShop.setIsExpand(!shoppingCartShop.isExpand());
             notifyItemChanged(position);
         });
 
-        List<ShoppingCartItem> itemsToShow = shoppingCart.isExpand()
-                ? shoppingCart.getShoppingCartItems()
+        List<ShoppingCartItem> itemsToShow = shoppingCartShop.isExpand()
+                ? shoppingCartShop.getShoppingCartItemList()
                 : null;
 
         // isChoose
@@ -68,12 +70,12 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
         holder.recyclerProducts.setAdapter(shoppingCartItemAdapter);
 
         holder.isChoose.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            shoppingCart.setIsChoose(isChecked);
-            for (ShoppingCartItem item : shoppingCart.getShoppingCartItems()) {
+            shoppingCartShop.setIsChoose(isChecked);
+            for (ShoppingCartItem item : shoppingCartShop.getShoppingCartItemList()) {
                 item.setIsChoose(isChecked);
             }
 
-            for (int i = 0; i < shoppingCart.getShoppingCartItems().size(); i++) {
+            for (int i = 0; i < shoppingCartShop.getShoppingCartItemList().size(); i++) {
                 shoppingCartItemAdapter.notifyItemChanged(i);
             }
         });
@@ -81,7 +83,7 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
 
     @Override
     public int getItemCount() {
-        return shoppingCartList.size();
+        return shoppingCartShopList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
