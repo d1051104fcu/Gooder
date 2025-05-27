@@ -18,7 +18,7 @@
         android:padding="8dp"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
-        tools:context=".ShoppingCartShopFragment">
+        tools:context=".ShoppingCartFragment">
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private Fragment homeFragment;
     //
 
+    private Fragment shoppingCartFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         homeFragment = HomeFragment.newInstance("", "");
         //
 
+        shoppingCartFragment = ShoppingCartFragment.newInstance("", "");
 
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -78,8 +80,8 @@ public class MainActivity extends AppCompatActivity {
                 else if(itemId == R.id.menu_post){
 
                 }
-                else if(itemId == R.id.menu_category){
-
+                else if(itemId == R.id.menu_shoppingCart){
+                    setCurrentFragment(shoppingCartFragment);
                 }
                 else{ // itemId == R.id.menu_home / 基江 : an object in menu > bottom_nav_menu
                     setCurrentFragment(homeFragment);
