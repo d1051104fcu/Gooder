@@ -25,14 +25,14 @@ public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.
 
         public ImageViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.imageView);
+            imageView = itemView.findViewById(R.id.iv_product1); // object in slider_image.xml
         }
     }
 
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.slider_image, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.slider_image, parent, false); // slider_image.xml
         return new ImageViewHolder(view);
     }
 

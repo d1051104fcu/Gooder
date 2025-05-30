@@ -2,6 +2,8 @@ package com.example.gooder;
 
 // 수동 추가 ViewPager2, Handler 不知道爲啥不能自動import
 import androidx.viewpager2.widget.ViewPager2;
+
+import android.content.Intent;
 import android.os.Handler;
 
 import android.content.Context;
@@ -16,10 +18,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.gooder.adapter.ImageSliderAdapter;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,12 +43,18 @@ import java.util.Set;
  */
 public class HomeFragment extends Fragment {
 
+    // FireBase => for four frames in GridLayout
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FrameLayout[] frames = new FrameLayout[4];
+    //
+
     // advertisement => ViewPager2
     private ViewPager2 viewPager;
     private Handler sliderHandler = new Handler();
     private Runnable sliderRunnable;
     private int currentPage = 0;
     private List<Integer> imageList;
+    //
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -140,7 +155,76 @@ public class HomeFragment extends Fragment {
         };
         sliderHandler.postDelayed(sliderRunnable, 3000);
 
+        // 예: TextView[]과 ImageView[] 배열로 4개의 frame을 관리한다고 가정
 
+        TextView tv_title1 = view.findViewById(R.id.tv_title1);
+        TextView tv_title2 = view.findViewById(R.id.tv_title2);
+        TextView tv_title3 = view.findViewById(R.id.tv_title3);
+        TextView tv_title4 = view.findViewById(R.id.tv_title4);
+        ImageView iv_product1 = view.findViewById(R.id.iv_product1);
+        ImageView iv_product2 = view.findViewById(R.id.iv_product2);
+        ImageView iv_product3 = view.findViewById(R.id.iv_product3);
+        ImageView iv_product4 = view.findViewById(R.id.iv_product4);
+        TextView[] titles = { tv_title1, tv_title2, tv_title3, tv_title4 };
+        ImageView[] images = { iv_product1, iv_product2, iv_product3, iv_product4 };
+
+//        db.collection("test_gigang")
+//                .get()
+//                .addOnSuccessListener(queryDocumentSnapshots -> {
+//                    List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+//                    for (int i = 0; i < docs.size() && i < 4; i++) {
+//                        DocumentSnapshot doc = docs.get(i);
+//                        String title = doc.getString("Title");
+//                        String imageUrl = doc.getString("ImageUrl");
+//
+//                        titles[i].setText(title);
+//
+//                        // Glide 사용해 이미지 로딩
+//                        Glide.with(this)
+//                                .load(imageUrl)
+//                                .into(images[i]);
+//                    }
+//                });
+
+        LinearLayout ll1 = view.findViewById(R.id.frame1);
+        LinearLayout ll2 = view.findViewById(R.id.frame2);
+        LinearLayout ll3 = view.findViewById(R.id.frame3);
+        LinearLayout ll4 = view.findViewById(R.id.frame4);
+        LinearLayout[] frames = { ll1, ll2, ll3, ll4 };
+
+        List<String> titlesList = new ArrayList<>();
+        List<String> imageUrls = new ArrayList<>();
+
+        db.collection("test_gigang")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+
+                    for (int i = 0; i < docs.size() && i < 4; i++) {
+                        DocumentSnapshot doc = docs.get(i);
+                        String title = doc.getString("Title");
+                        String imageUrl = doc.getString("ImageUrl");
+
+                        titles[i].setText(title);
+                        titlesList.add(title);
+                        imageUrls.add(imageUrl);
+
+                        Glide.with(view.getContext())  // fragment 안이니까 view.getContext()
+                                .load(imageUrl)
+                                .into(images[i]);
+
+                        // 프레임 클릭 시 상세 화면 이동
+                        int index = i; // 내부 클래스에서 사용하려면 final 또는 effectively final
+                        frames[i].setOnClickListener(v -> {
+                            Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
+
+//                            intent.putExtra("title", titlesList.get(index));
+//                            intent.putExtra("imageUrl", imageUrls.get(index));
+                            intent.putExtra("productId", doc.getId());
+                            startActivity(intent);
+                        });
+                    }
+                });
 
 //        searchView.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
 //            if (hasFocus) {
