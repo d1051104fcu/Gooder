@@ -45,7 +45,7 @@ public class HomeFragment extends Fragment {
 
     // FireBase => for four frames in GridLayout
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    FrameLayout[] frames = new FrameLayout[4];
+//    FrameLayout[] frames = new FrameLayout[4];
     //
 
     // advertisement => ViewPager2
@@ -104,7 +104,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         SearchView searchView = view.findViewById(R.id.search);
         // 처음부터 검색창 펼치기 (아이콘화 해제)
-//        searchView.setIconified(false);
+        searchView.setIconified(false);
 
         // SearchView 내부의 AutoCompleteTextView 찾기
         int autoCompleteId = searchView.getContext().getResources()
@@ -125,6 +125,12 @@ public class HomeFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 saveSearchQuery(requireContext(), query);
+
+                // 검색 결과 액티비티로 이동
+                Intent intent = new Intent(getActivity(), SearchResultActivity.class);
+                intent.putExtra("query", query);
+                startActivity(intent);
+
                 return false;
             }
             @Override
@@ -165,26 +171,22 @@ public class HomeFragment extends Fragment {
         ImageView iv_product2 = view.findViewById(R.id.iv_product2);
         ImageView iv_product3 = view.findViewById(R.id.iv_product3);
         ImageView iv_product4 = view.findViewById(R.id.iv_product4);
+
+        TextView tv_method1 = view.findViewById(R.id.tv_method1);
+        TextView tv_method2 = view.findViewById(R.id.tv_method2);
+        TextView tv_method3 = view.findViewById(R.id.tv_method3);
+        TextView tv_method4 = view.findViewById(R.id.tv_method4);
+
+        TextView tv_price1 = view.findViewById(R.id.tv_price1);
+        TextView tv_price2 = view.findViewById(R.id.tv_price2);
+        TextView tv_price3 = view.findViewById(R.id.tv_price3);
+        TextView tv_price4 = view.findViewById(R.id.tv_price4);
+
         TextView[] titles = { tv_title1, tv_title2, tv_title3, tv_title4 };
         ImageView[] images = { iv_product1, iv_product2, iv_product3, iv_product4 };
 
-//        db.collection("test_gigang")
-//                .get()
-//                .addOnSuccessListener(queryDocumentSnapshots -> {
-//                    List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
-//                    for (int i = 0; i < docs.size() && i < 4; i++) {
-//                        DocumentSnapshot doc = docs.get(i);
-//                        String title = doc.getString("Title");
-//                        String imageUrl = doc.getString("ImageUrl");
-//
-//                        titles[i].setText(title);
-//
-//                        // Glide 사용해 이미지 로딩
-//                        Glide.with(this)
-//                                .load(imageUrl)
-//                                .into(images[i]);
-//                    }
-//                });
+        TextView[] methods = { tv_method1, tv_method2, tv_method3, tv_method4 };
+        TextView[] prices =  { tv_price1, tv_price2, tv_price3, tv_price4 };
 
         LinearLayout ll1 = view.findViewById(R.id.frame1);
         LinearLayout ll2 = view.findViewById(R.id.frame2);
@@ -194,8 +196,10 @@ public class HomeFragment extends Fragment {
 
         List<String> titlesList = new ArrayList<>();
         List<String> imageUrls = new ArrayList<>();
+//        List<Long> priceList = new ArrayList<>();
+//        List<String> transactionMethodList = new ArrayList<>();
 
-        db.collection("test_gigang")
+        db.collection("test_gigang2")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
@@ -204,10 +208,20 @@ public class HomeFragment extends Fragment {
                         DocumentSnapshot doc = docs.get(i);
                         String title = doc.getString("Title");
                         String imageUrl = doc.getString("ImageUrl");
+                        String method = doc.getString("TransactionMethod");
+                        Long price = doc.getLong("Price");
+                        // Price
+                        // Body
+                        // TransactionMethod
+                        // Category
 
                         titles[i].setText(title);
-                        titlesList.add(title);
+//                        titlesList.add(title);
                         imageUrls.add(imageUrl);
+
+                        methods[i].setText(method);
+                        prices[i].setText(String.valueOf(price) + '元');
+
 
                         Glide.with(view.getContext())  // fragment 안이니까 view.getContext()
                                 .load(imageUrl)
