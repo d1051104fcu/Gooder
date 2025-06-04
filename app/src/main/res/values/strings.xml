@@ -10,4 +10,6 @@
         <item>Kaohsiung</item>
     </string-array>
 
+    <string name="product_name">產品名稱</string>
+
 </resources>
