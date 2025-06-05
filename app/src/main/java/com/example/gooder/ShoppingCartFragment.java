@@ -1,11 +1,13 @@
 package com.example.gooder;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,12 +89,12 @@ public class ShoppingCartFragment extends Fragment {
         toCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Need to fix: Nav
-                /*
-                startActivity(new Intent(ShoppingCartActivity.this, ));
-                finish();
-
-                 */
+                Fragment fragment = new CheckoutFragment();
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_main, fragment)
+                        .addToBackStack(null)
+                        .commit();
             }
         });
 
@@ -100,17 +102,22 @@ public class ShoppingCartFragment extends Fragment {
     }
 
     private void setupRecycleView(){
-        List<ShoppingCartItem> shoppingCartItemList = new ArrayList<>();
-        shoppingCartItemList.add(new ShoppingCartItem("name1", 360, 0, 1));
-        shoppingCartItemList.add(new ShoppingCartItem("name2", 200, 0, 1));
-        shoppingCartItemList.add(new ShoppingCartItem("name3", 300, 0, 2));
-        shoppingCartItemList.add(new ShoppingCartItem("name4", 500, 0, 1));
-        shoppingCartItemList.add(new ShoppingCartItem("name5", 100, 0, 1));
+        List<ShoppingCartItem> originalItemList = new ArrayList<>();
+        originalItemList.add(new ShoppingCartItem("name1", 360, 0, 1));
+        originalItemList.add(new ShoppingCartItem("name2", 200, 0, 1));
+        originalItemList.add(new ShoppingCartItem("name3", 300, 0, 2));
+        originalItemList.add(new ShoppingCartItem("name4", 500, 0, 1));
+        originalItemList.add(new ShoppingCartItem("name5", 100, 0, 1));
 
+        List<ShoppingCartItem> shoppingCartItemList1 = copyShoppingCartItemList(originalItemList);
+        List<ShoppingCartItem> shoppingCartItemList2 = copyShoppingCartItemList(originalItemList);
+        List<ShoppingCartItem> shoppingCartItemList3 = copyShoppingCartItemList(originalItemList);
 
-        shoppingCartShopList.add(new ShoppingCartShop("shopName1", shoppingCartItemList));
-        shoppingCartShopList.add(new ShoppingCartShop("shopName2", shoppingCartItemList));
-        shoppingCartShopList.add(new ShoppingCartShop("shopName3", shoppingCartItemList));
+        shoppingCartShopList.add(new ShoppingCartShop("shopName1", shoppingCartItemList1));
+        shoppingCartShopList.add(new ShoppingCartShop("shopName2", shoppingCartItemList2));
+        shoppingCartShopList.add(new ShoppingCartShop("shopName3", shoppingCartItemList3));
+
+        updateTotalPrice();
 
         shoppingCartShopAdapter = new ShoppingCartShopAdapter(shoppingCartShopList, new OnItemCheckChangedListener() {
             @Override
@@ -132,6 +139,19 @@ public class ShoppingCartFragment extends Fragment {
                 }
             }
         }
-        totalPrice.setText("$" + total);
+        totalPrice.setText("$ " + total);
+    }
+
+    private List<ShoppingCartItem> copyShoppingCartItemList(List<ShoppingCartItem> shoppingCartItemList){
+        List<ShoppingCartItem> newList = new ArrayList<>();
+        for (ShoppingCartItem item: shoppingCartItemList){
+            newList.add(new ShoppingCartItem(
+                    item.getName(),
+                    item.getPrice(),
+                    item.getImgId(),
+                    item.getCount()
+            ));
+        }
+        return newList;
     }
 }

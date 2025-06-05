@@ -38,40 +38,58 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ShoppingCartItem shoppingCartItem = shoppingCartItemList.get(position);
+
         holder.imgProduct.setImageResource(shoppingCartItem.getImgId());
         holder.productName.setText(shoppingCartItem.getName());
-        holder.productPrice.setText("$" + shoppingCartItem.getPrice());
-        holder.productCount.setText(shoppingCartItem.getCount());
-        holder.isChoose.setChecked(shoppingCartItem.isChoose());
+        holder.productPrice.setText(String.format("$%d", shoppingCartItem.getPrice()));
+        holder.productCount.setText(String.valueOf(shoppingCartItem.getCount()));
         holder.divider.setVisibility(position == shoppingCartItemList.size() - 1 ? View.GONE : View.VISIBLE);
 
+        // 先移除 listener，避免觸發循環更新
+        holder.isChoose.setOnCheckedChangeListener(null);
+        holder.isChoose.setChecked(shoppingCartItem.isChoose());
+
+        // 重新設置 listener
         holder.isChoose.setOnCheckedChangeListener((buttonView, isChecked) -> {
             shoppingCartItem.setIsChoose(isChecked);
-            if (listener != null){
+            if (listener != null) {
                 listener.onItemCheckChangedListener();
             }
 
-            notifyItemChanged(holder.getAdapterPosition());
+            // 延遲執行，避免 crash
+            //holder.itemView.post(() -> notifyItemChanged(position));
         });
 
         holder.plus.setOnClickListener(v -> {
             shoppingCartItem.setCount(shoppingCartItem.getCount() + 1);
-            holder.productCount.setText(shoppingCartItem.getCount());
-            notifyItemChanged(holder.getAdapterPosition());
+            holder.productCount.setText(String.valueOf(shoppingCartItem.getCount()));
+
+            if (listener != null) {
+                listener.onItemCheckChangedListener();
+            }
         });
 
         holder.minus.setOnClickListener(v -> {
-            if (shoppingCartItem.getCount() > 1){
+            if (shoppingCartItem.getCount() > 1) {
                 shoppingCartItem.setCount(shoppingCartItem.getCount() - 1);
-                holder.productCount.setText(shoppingCartItem.getCount());
-                notifyItemChanged(holder.getAdapterPosition());
-            }else {
+                holder.productCount.setText(String.valueOf(shoppingCartItem.getCount()));
+
+                if (listener != null) {
+                    listener.onItemCheckChangedListener();
+                }
+            } else {
                 // Need to fix: Remove from firebase
-                shoppingCartItemList.remove(shoppingCartItem);
-                notifyItemRemoved(holder.getAdapterPosition());
+                holder.itemView.post(() -> notifyItemChanged(position));
+                shoppingCartItemList.remove(position);
+                notifyItemRemoved(position);
+
+                if (listener != null) {
+                    listener.onItemCheckChangedListener();
+                }
             }
         });
     }
+
 
     @Override
     public int getItemCount(){
@@ -98,12 +116,8 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
         }
     }
 
-    public boolean isAllChecked(){
-        for (ShoppingCartItem item : shoppingCartItemList){
-            if (!item.isChoose()){
-                return false;
-            }
-        }
-        return true;
+    public void updateData(List<ShoppingCartItem> newList) {
+        this.shoppingCartItemList = newList;
+        notifyDataSetChanged();
     }
 }

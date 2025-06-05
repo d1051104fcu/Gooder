@@ -43,7 +43,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <TextView
-        android:id="@+id/shoppingCart_shopName"
+        android:id="@+id/checkout_shopName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -65,7 +65,7 @@
         app:layout_constraintEnd_toEndOf="@+id/imageView"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/shoppingCart_shopName" />
+        app:layout_constraintTop_toBottomOf="@+id/checkout_shopName" />
 
     <TextView
         android:id="@+id/textView3"
@@ -74,7 +74,7 @@
         android:layout_marginTop="8dp"
         android:text="密碼"
         android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="@+id/shoppingCart_shopName"
+        app:layout_constraintStart_toStartOf="@+id/checkout_shopName"
         app:layout_constraintTop_toBottomOf="@+id/register_edt_name" />
 
     <EditText

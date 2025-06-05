@@ -3,6 +3,8 @@
     <style name="Base.Theme.Gooder" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:colorBackground">@color/white</item>
+        <item name="colorOnBackground">#5A5A5B</item>
     </style>
 
     <style name="Theme.Gooder" parent="Base.Theme.Gooder" />

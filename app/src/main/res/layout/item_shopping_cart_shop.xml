@@ -39,7 +39,7 @@
                 android:src="@drawable/storefront_24px" />
 
             <TextView
-                android:id="@+id/shoppingCart_shopName"
+                android:id="@+id/checkout_shopName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -60,7 +60,7 @@
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/shoppingCart_recycler_products"
+            android:id="@+id/checkout_recycler_products"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"

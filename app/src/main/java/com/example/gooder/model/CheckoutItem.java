@@ -2,21 +2,19 @@ package com.example.gooder.model;
 
 import com.example.gooder.R;
 
-public class ShoppingCartItem {
+public class CheckoutItem {
     private final String name;
     private final int price;
-    private int imgId = R.drawable.not_found;
-    private int count;
-    private boolean isChoose;
+    private int imgId = R.drawable.not_found;;
+    private final int count;
 
-    public ShoppingCartItem(String name, int price, int imgId, int count){
+    public CheckoutItem(String name, int price, int imgId, int count){
         this.name = name;
         this.price = price;
         if (imgId != 0){
             this.imgId = imgId;
         }
         this.count = count;
-        this.isChoose = true;
     }
 
     public String getName() {
@@ -33,15 +31,5 @@ public class ShoppingCartItem {
 
     public int getCount() {
         return count;
-    }
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public boolean isChoose() {
-        return isChoose;
-    }
-    public void setIsChoose(boolean isChoose) {
-        this.isChoose = isChoose;
     }
 }

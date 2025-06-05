@@ -3,14 +3,14 @@ package com.example.gooder.model;
 import java.util.List;
 
 public class ShoppingCartShop {
-    private String shopName;
-    private List<ShoppingCartItem> shoppingCartItemList;
+    private final String shopName;
+    final private List<ShoppingCartItem> shoppingCartItemList;
     private boolean isChoose, isExpand;
 
     public ShoppingCartShop(String shopName, List<ShoppingCartItem> shoppingCartItem){
         this.shopName = shopName;
         this.shoppingCartItemList = shoppingCartItem;
-        this.isChoose = false;
+        this.isChoose = true;
         this.isExpand = true;
     }
 
