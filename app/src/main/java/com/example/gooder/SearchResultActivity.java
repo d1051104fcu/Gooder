@@ -50,15 +50,16 @@ public class SearchResultActivity extends AppCompatActivity {
                         String body = doc.getString("Body");
 
                         // 하나라도 포함되면
-                        if ((title != null && title.contains(query)) ||
-                                (category != null && category.contains(query)) ||
-                                (body != null && body.contains(query))) {
+                        if ((title != null && title.toLowerCase().contains(query.toLowerCase())) ||
+                                (category != null && category.toLowerCase().contains(query.toLowerCase())) ||
+                                (body != null && body.toLowerCase().contains(query.toLowerCase()))) {
+
 
                             String imageUrl = doc.getString("ImageUrl");
                             String method = doc.getString("TransactionMethod");
                             Long price = doc.getLong("Price");
 
-                            productList.add(new Product(title, imageUrl, method, price));
+                            productList.add(new Product(doc.getId(),title, imageUrl, method, price));
                         }
                     }
                     adapter.notifyDataSetChanged();

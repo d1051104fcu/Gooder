@@ -13,11 +13,14 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.os.Looper;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -102,6 +105,7 @@ public class HomeFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+// test ---
         SearchView searchView = view.findViewById(R.id.search);
         // 처음부터 검색창 펼치기 (아이콘화 해제)
         searchView.setIconified(false);
@@ -138,6 +142,38 @@ public class HomeFragment extends Fragment {
                 return false;
             }
         });
+// test ---
+
+////        AutoCompleteTextView searchInput = view.findViewById(R.id.search_input);
+//        EditText searchInput = view.findViewById(R.id.search_input);
+//        Button searchButton = view.findViewById(R.id.search_button);
+
+//// 저장된 검색 기록 불러오기
+//        Set<String> historySet = getSearchHistory(requireContext());  // Set<String>
+//        List<String> historyList = new ArrayList<>(historySet);
+//
+//// 자동완성 어댑터 연결
+//        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+//                requireContext(),
+//                android.R.layout.simple_dropdown_item_1line,
+//                historyList
+//        );
+//        searchInput.setAdapter(adapter);
+
+//// 검색 버튼 클릭 시 처리
+//        searchButton.setOnClickListener(v -> {
+//            String query = searchInput.getText().toString().trim();
+//
+//            if (!query.isEmpty()) {
+//                saveSearchQuery(requireContext(), query);  // 검색어 저장
+//
+//                // 다음 화면으로 이동
+//                Intent intent = new Intent(getActivity(), SearchResultActivity.class);
+//                intent.putExtra("query", query);
+//                startActivity(intent);
+//            }
+//        });
+
 
         // ViewPager2와 어댑터 설정
         viewPager = view.findViewById(R.id.viewPager);

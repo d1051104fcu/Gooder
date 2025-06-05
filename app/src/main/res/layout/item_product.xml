@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/iv_product_image"
-        android:layout_width="wrap_content"
+        android:layout_width="251dp"
         android:layout_height="128dp"
         android:layout_weight="1"
         tools:srcCompat="@tools:sample/avatars" />
@@ -21,21 +21,21 @@
         <TextView
             android:id="@+id/tv_product_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="42dp"
             android:layout_weight="1"
             android:text="TextView" />
 
         <TextView
             android:id="@+id/tv_product_method"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="42dp"
             android:layout_weight="1"
             android:text="TextView" />
 
         <TextView
             android:id="@+id/tv_product_price"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="42dp"
             android:layout_weight="1"
             android:text="TextView" />
     </LinearLayout>
