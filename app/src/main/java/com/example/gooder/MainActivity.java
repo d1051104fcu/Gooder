@@ -1,6 +1,7 @@
 package com.example.gooder;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences myPrefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         boolean isLogin = myPrefs.getBoolean("isLogin", false);
         if (isLogin) {
-            setCurrentFragment(shoppingCartFragment);
+            setCurrentFragment(homeFragment);
         } else {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
