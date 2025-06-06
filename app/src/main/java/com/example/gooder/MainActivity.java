@@ -1,6 +1,7 @@
 package com.example.gooder;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -81,8 +82,11 @@ public class MainActivity extends AppCompatActivity {
                     setCurrentFragment(settingFragment);
                 }
                 else if(itemId == R.id.menu_post){
-//                    setCurrentFragment(shopFragment);
 //                    setCurrentFragment(postFragment);
+//                    setCurrentFragment(shopFragment);
+                    // 啟動新的 PostProductActivity
+                    Intent intent = new Intent(MainActivity.this, PostProductActivity.class);
+                    startActivity(intent);
                 }
                 else if(itemId == R.id.menu_shoppingCart){
                     setCurrentFragment(shoppingCartFragment);
