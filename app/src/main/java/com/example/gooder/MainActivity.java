@@ -1,7 +1,6 @@
 package com.example.gooder;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     // 基江
     private Fragment homeFragment;
     //
-
+//    private Fragment shopFragment;
+//    private Fragment postFragment;
     private Fragment shoppingCartFragment;
 
     @Override
@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 darkMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
         );
 
+
         FirebaseApp.initializeApp(this);
 
         bottomNav = findViewById(R.id.bottom_nav);
@@ -64,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
         // 基江
         homeFragment = HomeFragment.newInstance("", "");
         //
+//        shopFragment = ShopFragment.newInstance("", "");
+//        postFragment = PostFragment.newInstance("", "");
 
         shoppingCartFragment = ShoppingCartFragment.newInstance("", "");
 
@@ -87,7 +90,8 @@ public class MainActivity extends AppCompatActivity {
                     setCurrentFragment(settingFragment);
                 }
                 else if(itemId == R.id.menu_post){
-
+//                    setCurrentFragment(shopFragment);
+//                    setCurrentFragment(postFragment);
                 }
                 else if(itemId == R.id.menu_shoppingCart){
                     setCurrentFragment(shoppingCartFragment);

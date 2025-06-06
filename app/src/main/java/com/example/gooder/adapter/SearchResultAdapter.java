@@ -1,6 +1,7 @@
 package com.example.gooder.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.gooder.ProductDetailActivity;
 import com.example.gooder.R;
 import com.example.gooder.model.Product;
 
@@ -54,6 +56,15 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
         Glide.with(context)
                 .load(product.getImageUrl())
                 .into(holder.imageView);
+
+        // 여기서 데이터 바인딩 (예: TextView, ImageView)
+        holder.textTitle.setText(product.getTitle());
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ProductDetailActivity.class);
+            intent.putExtra("productId", product.getId()); // 🔹 ID 전달
+            context.startActivity(intent);
+        });
     }
 
     @Override

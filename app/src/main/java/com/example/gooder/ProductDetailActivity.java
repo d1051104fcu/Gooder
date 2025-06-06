@@ -13,6 +13,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.w3c.dom.Text;
+
 public class ProductDetailActivity extends AppCompatActivity {
 
     @Override
@@ -28,18 +30,40 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         String productId = getIntent().getStringExtra("productId");
 
-        TextView tvTitle = findViewById(R.id.tv_product_title);
         ImageView ivImage = findViewById(R.id.iv_product_image);
+        TextView tvName = findViewById(R.id.tv_product_title);
+        TextView tvCity = findViewById(R.id.tv_city);
+        TextView tvMethod = findViewById(R.id.tv_method);
+        TextView tvCategory = findViewById(R.id.tv_category);
+        TextView tvDescription = findViewById(R.id.tv_description);
+        TextView tvPrice = findViewById(R.id.price_tv);
+        TextView tvAmount = findViewById(R.id.tv_amount);
+        TextView tvSellerId = findViewById(R.id.tv_seller_id);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("test_gigang").document(productId)
+        db.collection("Products").document(productId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        String title = documentSnapshot.getString("Title");
-                        String imageUrl = documentSnapshot.getString("ImageUrl");
+                        Long amount = documentSnapshot.getLong("amount");
+                        String category = documentSnapshot.getString("category");
+                        String city = documentSnapshot.getString("city");
+                        String description = documentSnapshot.getString("description");
+                        String imageUrl = documentSnapshot.getString("imageUrl");
+                        String name = documentSnapshot.getString("name");
+                        Long price = documentSnapshot.getLong("price");
+                        String seller_id = documentSnapshot.getString("seller_id");
+                        String method = documentSnapshot.getString("transactionMethod");
 
-                        tvTitle.setText(title);
+                        tvAmount.setText("數量： " + String.valueOf(amount));
+                        tvCategory.setText("分類： " + category);
+                        tvCity.setText(city);
+                        tvDescription.setText(description);
+                        tvName.setText(name);
+                        tvPrice.setText(String.valueOf(price) + '元');
+                        tvSellerId.setText(seller_id);
+                        tvMethod.setText(method);
+
 
                         Glide.with(this)
                                 .load(imageUrl)
