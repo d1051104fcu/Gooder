@@ -41,13 +41,13 @@ public class SearchResultActivity extends AppCompatActivity {
         String query = getIntent().getStringExtra("query");
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("test_gigang2")
+        db.collection("Products")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                        String title = doc.getString("Title");
-                        String category = doc.getString("Category");
-                        String body = doc.getString("Body");
+                        String title = doc.getString("name");
+                        String category = doc.getString("category");
+                        String body = doc.getString("description");
 
                         // 하나라도 포함되면
                         if ((title != null && title.toLowerCase().contains(query.toLowerCase())) ||
@@ -55,11 +55,12 @@ public class SearchResultActivity extends AppCompatActivity {
                                 (body != null && body.toLowerCase().contains(query.toLowerCase()))) {
 
 
-                            String imageUrl = doc.getString("ImageUrl");
-                            String method = doc.getString("TransactionMethod");
-                            Long price = doc.getLong("Price");
+                            String imageUrl = doc.getString("imageUrl");
+                            String method = doc.getString("transactionMethod");
+                            Long price = doc.getLong("price");
+                            String city = doc.getString("city");
 
-                            productList.add(new Product(doc.getId(),title, imageUrl, method, price));
+                            productList.add(new Product(doc.getId(),title, imageUrl, method, price, city));
                         }
                     }
                     adapter.notifyDataSetChanged();
