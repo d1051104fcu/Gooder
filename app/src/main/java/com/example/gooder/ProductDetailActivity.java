@@ -13,6 +13,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.w3c.dom.Text;
+
 public class ProductDetailActivity extends AppCompatActivity {
 
     @Override
@@ -28,18 +30,37 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         String productId = getIntent().getStringExtra("productId");
 
-        TextView tvTitle = findViewById(R.id.tv_product_title);
         ImageView ivImage = findViewById(R.id.iv_product_image);
+        TextView tvTitle = findViewById(R.id.tv_product_title);
+        TextView tvCity = findViewById(R.id.tv_city);
+        TextView tvMethod = findViewById(R.id.tv_method);
+        TextView tvCategory = findViewById(R.id.tv_category);
+        TextView tvBody = findViewById(R.id.tv_body);
+        TextView tvPrice = findViewById(R.id.price_tv);
+
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("test_gigang").document(productId)
+        db.collection("test_gigang2").document(productId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String title = documentSnapshot.getString("Title");
                         String imageUrl = documentSnapshot.getString("ImageUrl");
+                        String method = documentSnapshot.getString("TransactionMethod");
+                        String category = documentSnapshot.getString("Category");
+                        String body = documentSnapshot.getString("Body");
+                        Long price = documentSnapshot.getLong("Price");
+                        // Price
+                        // Body
+                        // TransactionMethod
+                        // Category
 
                         tvTitle.setText(title);
+//                        tvCity.setText();
+                        tvCategory.setText(category);
+                        tvBody.setText(body);
+                        tvMethod.setText(method);
+                        tvPrice.setText(String.valueOf(price) + '元');
 
                         Glide.with(this)
                                 .load(imageUrl)
