@@ -11,11 +11,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.gooder.R;
 import com.example.gooder.listener.OnItemCheckChangedListener;
 import com.example.gooder.model.ShoppingCartItem;
+import com.google.firebase.Firebase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartItemAdapter.ViewHolder> {
@@ -39,11 +45,14 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ShoppingCartItem shoppingCartItem = shoppingCartItemList.get(position);
 
-        holder.imgProduct.setImageResource(shoppingCartItem.getImgId());
         holder.productName.setText(shoppingCartItem.getName());
         holder.productPrice.setText(String.format("$%d", shoppingCartItem.getPrice()));
         holder.productCount.setText(String.valueOf(shoppingCartItem.getCount()));
         holder.divider.setVisibility(position == shoppingCartItemList.size() - 1 ? View.GONE : View.VISIBLE);
+        Glide.with(holder.itemView.getContext())
+                .load(shoppingCartItem.getImgId())
+                        .error(R.drawable.not_found)
+                                .into(holder.imgProduct);
 
         // 先移除 listener，避免觸發循環更新
         holder.isChoose.setOnCheckedChangeListener(null);
@@ -120,4 +129,24 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
         this.shoppingCartItemList = newList;
         notifyDataSetChanged();
     }
+
+    /*
+    private void tempAddData(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        CollectionReference productsCollection = db.collection("Products");
+        Map<String, Object> product = new HashMap<>();
+        product.put("amount", 1);
+        product.put("category", "服飾");
+        product.put("city", "台中");
+        product.put("description", "test product 的 description");
+        product.put("imageURL", "0");
+        product.put("name", "testProduct");
+        product.put("price", 200);
+        product.put("seller_id", "4ofaHQnw54NPnZjOfl4LpxpJSAD2");
+        product.put("transactionMethod", "面交");
+
+        productsCollection.add(product);
+    }
+    */
 }

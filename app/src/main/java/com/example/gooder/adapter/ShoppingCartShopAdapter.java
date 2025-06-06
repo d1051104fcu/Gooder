@@ -4,7 +4,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -22,8 +21,7 @@ import java.util.List;
 
 public class ShoppingCartShopAdapter extends RecyclerView.Adapter<ShoppingCartShopAdapter.ViewHolder> {
     List<ShoppingCartShop> shoppingCartShopList;
-    private OnItemCheckChangedListener listener;
-    private CompoundButton.OnCheckedChangeListener shopCheckListener;
+    private final OnItemCheckChangedListener listener;
 
     public ShoppingCartShopAdapter(List<ShoppingCartShop> list, OnItemCheckChangedListener listener){
         this.shoppingCartShopList = list;
@@ -54,7 +52,7 @@ public class ShoppingCartShopAdapter extends RecyclerView.Adapter<ShoppingCartSh
         ImageButton isExpand;
         RecyclerView recyclerProducts;
 
-        private ShoppingCartItemAdapter itemAdapter;
+        private final ShoppingCartItemAdapter itemAdapter;
         private final ShoppingCartShopAdapter adapterRef;
 
         public ViewHolder(@NonNull View itemView, ShoppingCartShopAdapter adapter) {

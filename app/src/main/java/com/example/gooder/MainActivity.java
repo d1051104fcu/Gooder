@@ -1,6 +1,7 @@
 package com.example.gooder;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -54,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
                 darkMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
         );
 
-
         FirebaseApp.initializeApp(this);
 
         bottomNav = findViewById(R.id.bottom_nav);
@@ -66,6 +66,15 @@ public class MainActivity extends AppCompatActivity {
         //
 
         shoppingCartFragment = ShoppingCartFragment.newInstance("", "");
+
+        SharedPreferences myPrefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        boolean isLogin = myPrefs.getBoolean("isLogin", false);
+        if (isLogin) {
+            setCurrentFragment(shoppingCartFragment);
+        } else {
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
+        }
 
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override

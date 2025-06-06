@@ -15,12 +15,12 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="8dp">
+            android:padding="4dp">
 
             <CheckBox
                 android:id="@+id/shoppingCart_item_isChoose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="30dp"
+                android:layout_height="30dp" />
 
             <ImageView
                 android:id="@+id/shoppingCart_img"
@@ -65,7 +65,7 @@
 
                 <Button
                     android:id="@+id/shoppingCart_ProductCount_minus"
-                    android:layout_width="34dp"
+                    android:layout_width="30dp"
                     android:layout_height="34dp"
                     android:backgroundTint="#E2E2E2"
                     android:padding="0dp"
@@ -79,12 +79,12 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:gravity="center"
-                    android:text="1"
+                    android:text="12"
                     android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/shoppingCart_ProductCount_plus"
-                    android:layout_width="34dp"
+                    android:layout_width="30dp"
                     android:layout_height="34dp"
                     android:backgroundTint="#E2E2E2"
                     android:padding="0dp"

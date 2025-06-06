@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.gooder.R;
 import com.example.gooder.model.CheckoutItem;
 
@@ -33,12 +34,14 @@ public class CheckoutItemAdapter extends RecyclerView.Adapter<CheckoutItemAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CheckoutItem checkoutItem = checkoutItemList.get(position);
-        holder.imgProduct.setImageResource(checkoutItem.getImgId());
         holder.productName.setText(checkoutItem.getName());
         holder.productPrice.setText(String.format("$%d", checkoutItem.getPrice()));
         holder.productCount.setText(String.valueOf(checkoutItem.getCount()));
         holder.divider.setVisibility(position == checkoutItemList.size() - 1 ? View.GONE : View.VISIBLE);
-
+        Glide.with(holder.itemView.getContext())
+                .load(checkoutItem.getImgId())
+                .error(R.drawable.not_found)
+                .into(holder.imgProduct);
     }
 
     @Override

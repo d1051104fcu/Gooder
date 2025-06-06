@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -17,23 +17,23 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gooder.R;
-import com.example.gooder.model.CheckoutItem;
+import com.example.gooder.listener.OnItemCheckChangedListener;
 import com.example.gooder.model.CheckoutShop;
+import com.example.gooder.model.TradeMode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CheckoutShopAdapter extends RecyclerView.Adapter<CheckoutShopAdapter.ViewHolder> {
 
-    private List<CheckoutShop> checkoutShopList;
-    private Context context;
-    private ArrayAdapter<String> tradeModeAdapter;
+    private final List<CheckoutShop> checkoutShopList;
+    private final ArrayAdapter<String> tradeModeAdapter;
+    private final OnItemCheckChangedListener tradeModeChangeListener;
 
-    public CheckoutShopAdapter(List<CheckoutShop> list, Context context) {
+    public CheckoutShopAdapter(List<CheckoutShop> list, Context context, OnItemCheckChangedListener listener) {
         this.checkoutShopList = list;
-        this.context = context;
+        this.tradeModeChangeListener = listener;
 
-        String[] tradeModes = {"宅配", "超商", "面交"};
+        List<String> tradeModes = TradeMode.getDisplayList();
         ArrayAdapter<String> tradeModeAdapter = new ArrayAdapter<>(
                 context,
                 android.R.layout.simple_spinner_item,
@@ -62,16 +62,27 @@ public class CheckoutShopAdapter extends RecyclerView.Adapter<CheckoutShopAdapte
         holder.tradeMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedMode = (String) parent.getItemAtPosition(position);
-                Log.d("selectedMode", selectedMode);
-                /*
-                if (selectedMode.equals("面交")) {
-                    holder.address.setVisibility(View.GONE);
+                String selectedDisplayMode = (String) parent.getItemAtPosition(position);
+                String mode = TradeMode.extractModeFromDisplay(selectedDisplayMode);
+                int freight = TradeMode.getFreight(mode);
+
+                checkoutShop.setTradeMode(mode);
+                checkoutShop.setFreight(freight);
+
+                if (mode.equals("面交")) {
+                    holder.linearAddress.setVisibility(View.GONE);
+                    holder.dividerUpAddress.setVisibility(View.GONE);
+                    holder.address.setText("");
                 } else {
-                    holder.address.setVisibility(View.VISIBLE);
+                    holder.dividerUpAddress.setVisibility(View.VISIBLE);
+                    holder.linearAddress.setVisibility(View.VISIBLE);
                 }
-                */
-                checkoutShop.setTradeMode(selectedMode);
+
+                if (tradeModeChangeListener != null){
+                    tradeModeChangeListener.onItemCheckChangedListener();
+                }
+
+                Log.d("selectedDisplayMode", mode);
             }
 
             @Override
@@ -91,6 +102,8 @@ public class CheckoutShopAdapter extends RecyclerView.Adapter<CheckoutShopAdapte
         RecyclerView recyclerProducts;
         Spinner tradeMode;
         EditText address;
+        LinearLayout linearAddress;
+        View dividerUpAddress;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -98,8 +111,10 @@ public class CheckoutShopAdapter extends RecyclerView.Adapter<CheckoutShopAdapte
             recyclerProducts = itemView.findViewById(R.id.checkout_recycler_products);
             tradeMode = itemView.findViewById(R.id.checkout_tradeMode);
             address = itemView.findViewById(R.id.checkout_address);
+            linearAddress = itemView.findViewById(R.id.checkout_linear_address);
+            dividerUpAddress = itemView.findViewById(R.id.checkout_divider_UpAddress);
 
-            recyclerProducts.setLayoutManager(new LinearLayoutManager(itemView.getContext()));;
+            recyclerProducts.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
         }
     }
 }

@@ -1,20 +1,65 @@
 package com.example.gooder.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import com.example.gooder.R;
 
-public class CheckoutItem {
+public class CheckoutItem implements Parcelable {
+    private final String ShoppingCartId;
     private final String name;
     private final int price;
-    private int imgId = R.drawable.not_found;;
+    private String imgId = String.valueOf(R.drawable.not_found);;
     private final int count;
 
-    public CheckoutItem(String name, int price, int imgId, int count){
+    public CheckoutItem(String ShoppingCartId, String name, int price, String imgId, int count){
+        this.ShoppingCartId = ShoppingCartId;
         this.name = name;
         this.price = price;
-        if (imgId != 0){
+        if (!imgId.isEmpty()){
             this.imgId = imgId;
         }
         this.count = count;
+    }
+
+    protected CheckoutItem(Parcel in) {
+        ShoppingCartId = in.readString();
+        name = in.readString();
+        price = in.readInt();
+        imgId = in.readString();
+        count = in.readInt();
+    }
+
+    public static final Creator<CheckoutItem> CREATOR = new Creator<CheckoutItem>() {
+        @Override
+        public CheckoutItem createFromParcel(Parcel in) {
+            return new CheckoutItem(in);
+        }
+
+        @Override
+        public CheckoutItem[] newArray(int size) {
+            return new CheckoutItem[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(ShoppingCartId);
+        dest.writeString(name);
+        dest.writeInt(price);
+        dest.writeString(imgId);
+        dest.writeInt(count);
+    }
+
+    public String getShoppingCartId() {
+        return ShoppingCartId;
     }
 
     public String getName() {
@@ -25,7 +70,7 @@ public class CheckoutItem {
         return price;
     }
 
-    public int getImgId() {
+    public String getImgId() {
         return imgId;
     }
 

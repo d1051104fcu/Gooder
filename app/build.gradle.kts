@@ -55,4 +55,8 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
 
+    // load image URL to ImageView
+    implementation(libs.github.glide)
+    annotationProcessor(libs.glide.compiler)
+
 }

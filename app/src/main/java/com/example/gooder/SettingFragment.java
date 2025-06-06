@@ -1,6 +1,7 @@
 package com.example.gooder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -112,7 +113,15 @@ public class SettingFragment extends Fragment {
             public void onClick(View view) {
                 auth.signOut();
                 Toast.makeText(getContext(), "已登出", Toast.LENGTH_SHORT).show();
-                //TODO 跳轉頁面
+
+                // 有加prefs 跟跳轉頁面了~
+                SharedPreferences myPrefs = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = myPrefs.edit();
+                editor.putBoolean("isLogin", false);
+                editor.apply();
+
+                startActivity(new Intent(getContext(), LoginActivity.class));
+                requireActivity().finish();
             }
         });
 
