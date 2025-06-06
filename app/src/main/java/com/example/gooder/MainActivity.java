@@ -34,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     // 基江
     private Fragment homeFragment;
     //
-
+//    private Fragment shopFragment;
+//    private Fragment postFragment;
     private Fragment shoppingCartFragment;
 
     @Override
@@ -64,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
         // 基江
         homeFragment = HomeFragment.newInstance("", "");
         //
+//        shopFragment = ShopFragment.newInstance("", "");
+//        postFragment = PostFragment.newInstance("", "");
 
         shoppingCartFragment = ShoppingCartFragment.newInstance("", "");
 
@@ -78,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
                     setCurrentFragment(settingFragment);
                 }
                 else if(itemId == R.id.menu_post){
-
+//                    setCurrentFragment(shopFragment);
+//                    setCurrentFragment(postFragment);
                 }
                 else if(itemId == R.id.menu_shoppingCart){
                     setCurrentFragment(shoppingCartFragment);
