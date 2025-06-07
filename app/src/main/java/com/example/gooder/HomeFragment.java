@@ -326,7 +326,7 @@ public class HomeFragment extends Fragment {
                             for (int i = 0; i < docs.size() && i < 4; i++) {
                                 DocumentSnapshot doc = docs.get(i);
                                 String title = doc.getString("name");
-                                String imageUrl = doc.getString("imageUrl");
+                                String imageURL = doc.getString("imageURL");
                                 String method = doc.getString("transactionMethod");
                                 Long price = doc.getLong("price");
 
@@ -334,7 +334,13 @@ public class HomeFragment extends Fragment {
                                 methods[i].setText(method);
                                 prices[i].setText(String.valueOf(price) + "元");
 
-                                Glide.with(getContext()).load(imageUrl).into(images[i]);
+                                Glide.with(getContext()).load(imageURL).into(images[i]);
+
+//                                Glide.with(getContext()) // 또는 getActivity()
+//                                        .load(imageUrl)
+//                                        .error(R.drawable.not_found) // 실패 시 이미지
+//                                        .into(images[i]);
+
 
                                 int index = i;
                                 frames[i].setOnClickListener(v -> {

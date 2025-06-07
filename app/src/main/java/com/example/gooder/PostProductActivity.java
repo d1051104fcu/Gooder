@@ -136,8 +136,8 @@ public class PostProductActivity extends AppCompatActivity {
             Long price = Long.parseLong(priceStr);
             String sellerId = currentUser.getUid();
 
-            Product product = new Product(name, price, description, amount, sellerId, imageUrl);
-            postToFirestore(product); // <-- 修改方法名稱
+//            Product product = new Product(name, price, description, amount, sellerId, imageUrl);
+//            postToFirestore(product); // <-- 修改方法名稱
         } catch (NumberFormatException e) {
             Toast.makeText(this, "庫存和價格必須是有效的數字", Toast.LENGTH_SHORT).show();
             setLoading(false);
