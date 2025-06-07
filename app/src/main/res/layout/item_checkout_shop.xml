@@ -76,13 +76,14 @@
 
             <Spinner
                 android:id="@+id/checkout_tradeMode"
-                android:layout_width="100dp"
+                android:layout_width="120dp"
                 android:layout_height="25dp"
                 android:background="@drawable/bg_corner10_gray_arrow"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
         </LinearLayout>
 
         <View
+            android:id="@+id/checkout_divider_UpAddress"
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_marginHorizontal="5dp"
@@ -90,6 +91,7 @@
             android:background="@drawable/horizontal_divider" />
 
         <LinearLayout
+            android:id="@+id/checkout_linear_address"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
@@ -106,11 +108,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
                 android:layout_weight="1"
-                android:paddingHorizontal="10dp"
                 android:background="@drawable/bg_corner10_gray"
                 android:ems="10"
                 android:hint="address"
                 android:inputType="text"
+                android:paddingHorizontal="10dp"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
         </LinearLayout>

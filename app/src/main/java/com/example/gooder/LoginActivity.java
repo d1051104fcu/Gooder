@@ -1,8 +1,13 @@
 package com.example.gooder;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -52,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String email = edt_Email.getText().toString();
                 String password = edt_Password.getText().toString();
+                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
 
                 mAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -59,8 +65,11 @@ public class LoginActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()){
                                     //FirebaseUser user = mAuth.getCurrentUser();
+                                    SharedPreferences.Editor editor = prefs.edit();
+                                    editor.putBoolean("isLogin", true);
+                                    editor.apply();
 
-                                    startActivity(new Intent(LoginActivity.this, HomeFragment.class));
+                                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                     finish();
                                 }else {
                                     Toast.makeText(LoginActivity.this, "登入失敗" + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
@@ -77,5 +86,26 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event){
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View view = getCurrentFocus();
+            if (view instanceof EditText) {
+                Rect outRect = new Rect();
+                view.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
+                    view.clearFocus();
+
+                    // 隱藏鍵盤
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event);
     }
 }

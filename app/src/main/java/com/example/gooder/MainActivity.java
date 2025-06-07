@@ -71,6 +71,15 @@ public class MainActivity extends AppCompatActivity {
 
         shoppingCartFragment = ShoppingCartFragment.newInstance("", "");
 
+        SharedPreferences myPrefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        boolean isLogin = myPrefs.getBoolean("isLogin", false);
+        if (isLogin) {
+            setCurrentFragment(homeFragment);
+        } else {
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
+        }
+
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

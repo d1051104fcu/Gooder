@@ -316,8 +316,8 @@ public class HomeFragment extends Fragment {
                 String selectedCity = parent.getItemAtPosition(position).toString();
 
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("test_gigang2")
-                        .whereEqualTo("City", selectedCity) // <- 도시 필터링
+                db.collection("Products")
+                        .whereEqualTo("city", selectedCity) // <- 도시 필터링
                         .get()
                         .addOnSuccessListener(queryDocumentSnapshots -> {
                             List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
@@ -325,10 +325,10 @@ public class HomeFragment extends Fragment {
                             // UI에 최대 4개까지만 출력
                             for (int i = 0; i < docs.size() && i < 4; i++) {
                                 DocumentSnapshot doc = docs.get(i);
-                                String title = doc.getString("Title");
-                                String imageUrl = doc.getString("ImageUrl");
-                                String method = doc.getString("TransactionMethod");
-                                Long price = doc.getLong("Price");
+                                String title = doc.getString("name");
+                                String imageUrl = doc.getString("imageUrl");
+                                String method = doc.getString("transactionMethod");
+                                Long price = doc.getLong("price");
 
                                 titles[i].setText(title);
                                 methods[i].setText(method);

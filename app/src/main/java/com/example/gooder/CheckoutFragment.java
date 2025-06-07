@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.gooder.adapter.CheckoutShopAdapter;
+import com.example.gooder.listener.OnItemCheckChangedListener;
 import com.example.gooder.model.CheckoutItem;
 import com.example.gooder.model.CheckoutShop;
 
@@ -41,7 +42,6 @@ public class CheckoutFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private TextView freight, totalPrice;
-    private Button checkout;
     CheckoutShopAdapter checkoutShopAdapter;
     List<CheckoutShop> checkoutShopList = new ArrayList<>();
 
@@ -71,6 +71,7 @@ public class CheckoutFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            checkoutShopList = getArguments().getParcelableArrayList("checkoutShopList");
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
@@ -85,7 +86,7 @@ public class CheckoutFragment extends Fragment {
         recyclerView = view.findViewById(R.id.checkout_recycler_shops);
         freight = view.findViewById(R.id.checkout_freight);
         totalPrice = view.findViewById(R.id.checkout_totalPrice);
-        checkout = view.findViewById(R.id.checkout_checkout);
+        Button checkout = view.findViewById(R.id.checkout_checkout);
 
         setupRecyclerView();
 
@@ -102,28 +103,15 @@ public class CheckoutFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        List<CheckoutItem> originalList = new ArrayList<>();
-        originalList.add(new CheckoutItem("name1", 360, 0, 1));
-        /*
-        originalList.add(new CheckoutItem("name2", 200, 0, 1));
-        originalList.add(new CheckoutItem("name3", 300, 0, 2));
-        originalList.add(new CheckoutItem("name4", 500, 0, 1));
-        originalList.add(new CheckoutItem("name5", 100, 0, 1));
-
-         */
-
-        List<CheckoutItem> checkoutItemList1 = copyCheckoutItemList(originalList);
-        List<CheckoutItem> checkoutItemList2 = copyCheckoutItemList(originalList);
-        List<CheckoutItem> checkoutItemList3 = copyCheckoutItemList(originalList);
-
-        checkoutShopList.add(new CheckoutShop("shop1", checkoutItemList1));
-        checkoutShopList.add(new CheckoutShop("shop2", checkoutItemList2));
-        //checkoutShopList.add(new CheckoutShop("shop3", checkoutItemList3));
-
         setTotalPrice();
-        freight.setText("$ 0");
+        updateFreight();
 
-        checkoutShopAdapter = new CheckoutShopAdapter(checkoutShopList, requireContext());
+        checkoutShopAdapter = new CheckoutShopAdapter(checkoutShopList, requireContext(), new OnItemCheckChangedListener() {
+            @Override
+            public void onItemCheckChangedListener() {
+                updateFreight();
+            }
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(checkoutShopAdapter);
     }
@@ -138,17 +126,13 @@ public class CheckoutFragment extends Fragment {
         totalPrice.setText("$ " + total);
     }
 
-    private List<CheckoutItem> copyCheckoutItemList(List<CheckoutItem> checkoutItemList){
-        List<CheckoutItem> newList = new ArrayList<>();
-        for (CheckoutItem item: checkoutItemList){
-            newList.add(new CheckoutItem(
-                    item.getName(),
-                    item.getPrice(),
-                    item.getImgId(),
-                    item.getCount()
-            ));
+    private void updateFreight(){
+        int total = 0;
+        for (CheckoutShop shop: checkoutShopList){
+            total += shop.getFreight();
         }
-        return newList;
+
+        freight.setText("$ " + total);
     }
 
     private void setupUIToHideKeyboard(View view) {

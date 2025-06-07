@@ -1,9 +1,14 @@
 package com.example.gooder;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -57,10 +62,11 @@ public class RegisterActivity extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = edt_Email.getText().toString();
-                String name = edt_Name.getText().toString();
-                String password = edt_Password.getText().toString();
-                String confirmPassword = edt_ConfirmPassword.getText().toString();
+                String email = edt_Email.getText().toString().trim();
+                String name = edt_Name.getText().toString().trim();
+                String password = edt_Password.getText().toString().trim();
+                String confirmPassword = edt_ConfirmPassword.getText().toString().trim();
+                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
 
                 if (!email.isEmpty() && !name.isEmpty() && !password.isEmpty()){
                     if (password.equals(confirmPassword)){
@@ -73,21 +79,25 @@ public class RegisterActivity extends AppCompatActivity {
 
                                             if (user != null){
                                                 String uid = user.getUid();
-                                                User userData = new User(uid, email, name);
+                                                User userData = new User(email, name);
                                                 db.collection("Users")
                                                         .document(uid)
                                                         .set(userData)
                                                         .addOnSuccessListener( a -> {
                                                             Log.i("User", "註冊成功！ " + uid);
+
+                                                            SharedPreferences.Editor editor = prefs.edit();
+                                                            editor.putBoolean("isLogin", true);
+                                                            editor.apply();
+
+                                                            startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                                                            finish();
                                                         })
                                                         .addOnFailureListener( e -> {
                                                             Toast.makeText(RegisterActivity.this, "FireStore 寫入失敗：" + e.getMessage(), Toast.LENGTH_SHORT).show();
                                                             Log.e("User", "註冊失敗！ " + e.getMessage());
                                                         });
                                             }
-
-                                            startActivity(new Intent(RegisterActivity.this, HomeFragment.class));
-                                            finish();
                                         }else {
                                             Toast.makeText(RegisterActivity.this, "註冊失敗" + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
                                         }
@@ -111,5 +121,26 @@ public class RegisterActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event){
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View view = getCurrentFocus();
+            if (view instanceof EditText) {
+                Rect outRect = new Rect();
+                view.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
+                    view.clearFocus();
+
+                    // 隱藏鍵盤
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event);
     }
 }
