@@ -36,68 +36,112 @@ public class SearchResultActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         List<Product> productList = new ArrayList<>();
-//        //--
-//        SearchView searchView;
-//        //--
+
         SearchResultAdapter adapter = new SearchResultAdapter(this, productList);
         recyclerView.setAdapter(adapter);
 
-        //--
-        // SearchView 초기화
-//        searchView = findViewById(R.id.searchView);
-//        // 텍스트가 변경될 때마다 필터 메소드 호출
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                // 키보드에 “검색 버튼” 누를 때
-//                adapter.filter(query);
-//                return true;
-//            }
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                // 타이핑 한 글자마다 실시간 필터
-//                adapter.filter(newText);
-//                return true;
-//            }
-//        });
+        SearchView searchView = findViewById(R.id.searchView);
+        searchView.setIconified(false); // 처음부터 검색창 펼치기 (아이콘화 해제)
+
+        String query = getIntent().getStringExtra("query"); // 초기 검색어 가져오기
+
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        db.collection("Products")
+//                .get()
+//                .addOnSuccessListener(querySnapshot -> {
+//                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+//                        String name = doc.getString("name");
+//                        String category = doc.getString("category");
+//                        String description = doc.getString("description");
 //
-//        // 인텐트에서 전달된 초기 검색어가 있을 때 (옵션)
-//        String initialQuery = getIntent().getStringExtra("query");
-//        if (initialQuery != null && !initialQuery.isEmpty()) {
-//            // Firestore 데이터 로딩 후 필터를 바로 적용하기 위해 약간의 지연을 둘 수도 있고,
-//            // 아니면 onSuccessListener 안에서 adapter.filter(initialQuery) 호출.
-//            searchView.setQuery(initialQuery, true);
-//        }
-//        //--
+//                        // 하나라도 포함되면
+//                        if ((name != null && name.toLowerCase().contains(query.toLowerCase())) ||
+//                                (category != null && category.toLowerCase().contains(query.toLowerCase())) ||
+//                                (description != null && description.toLowerCase().contains(query.toLowerCase()))) {
+//
+//
+//                            String imageURL = doc.getString("imageURL");
+//                            String method = doc.getString("transactionMethod");
+//                            Long price = doc.getLong("price");
+//                            String city = doc.getString("city");
+//                            Long amount = doc.getLong("amount");
+//
+//                            productList.add(new Product(doc.getId(), name, imageURL, method, price, city, amount, category, description));
+//                        }
+//                    }
+//                    adapter.notifyDataSetChanged();
+//                });
 
-        String query = getIntent().getStringExtra("query");
+        if (query != null) {
+            searchView.setQuery(query, false);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Products")
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                        String name = doc.getString("name");
-                        String category = doc.getString("category");
-                        String description = doc.getString("description");
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("Products")
+                    .get()
+                    .addOnSuccessListener(querySnapshot -> {
+                        productList.clear();
+                        for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                            String name = doc.getString("name");
+                            String category = doc.getString("category");
+                            String description = doc.getString("description");
 
-                        // 하나라도 포함되면
-                        if ((name != null && name.toLowerCase().contains(query.toLowerCase())) ||
-                                (category != null && category.toLowerCase().contains(query.toLowerCase())) ||
-                                (description != null && description.toLowerCase().contains(query.toLowerCase()))) {
+                            if ((name != null && name.toLowerCase().contains(query.toLowerCase())) ||
+                                    (category != null && category.toLowerCase().contains(query.toLowerCase())) ||
+                                    (description != null && description.toLowerCase().contains(query.toLowerCase()))) {
 
+                                String imageURL = doc.getString("imageURL");
+                                String method = doc.getString("transactionMethod");
+                                Long price = doc.getLong("price");
+                                String city = doc.getString("city");
+                                Long amount = doc.getLong("amount");
 
-                            String imageURL = doc.getString("imageURL");
-                            String method = doc.getString("transactionMethod");
-                            Long price = doc.getLong("price");
-                            String city = doc.getString("city");
-                            Long amount = doc.getLong("amount");
-
-                            productList.add(new Product(doc.getId(), name, imageURL, method, price, city, amount, category, description));
+                                productList.add(new Product(doc.getId(), name, imageURL, method, price, city, amount, category, description));
+                            }
                         }
-                    }
-                    adapter.notifyDataSetChanged();
-                });
+                        adapter.notifyDataSetChanged();
+                    });
+        }
+
+// 🔹 SearchView 검색 리스너 등록
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String newQuery) {
+                // 🔁 위와 똑같은 검색 로직 붙이기
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("Products")
+                        .get()
+                        .addOnSuccessListener(querySnapshot -> {
+                            productList.clear();
+                            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                                String name = doc.getString("name");
+                                String category = doc.getString("category");
+                                String description = doc.getString("description");
+
+                                if ((name != null && name.toLowerCase().contains(newQuery.toLowerCase())) ||
+                                        (category != null && category.toLowerCase().contains(newQuery.toLowerCase())) ||
+                                        (description != null && description.toLowerCase().contains(newQuery.toLowerCase()))) {
+
+                                    String imageURL = doc.getString("imageURL");
+                                    String method = doc.getString("transactionMethod");
+                                    Long price = doc.getLong("price");
+                                    String city = doc.getString("city");
+                                    Long amount = doc.getLong("amount");
+
+                                    productList.add(new Product(doc.getId(), name, imageURL, method, price, city, amount, category, description));
+                                }
+                            }
+                            adapter.notifyDataSetChanged();
+                        });
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
 
     }
+
 }

@@ -11,11 +11,17 @@
         android:id="@+id/searchView"
         android:layout_width="378dp"
         android:layout_height="61dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:background="#23000000"
+        android:backgroundTint="@color/material_dynamic_neutral60"
+        android:fadingEdge="none"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.484"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:queryHint="搜尋" >
 
     </SearchView>
 

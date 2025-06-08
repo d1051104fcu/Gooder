@@ -23,7 +23,7 @@
         android:background="#23000000"
         android:backgroundTint="@color/material_dynamic_neutral60"
         android:fadingEdge="none"
-        android:queryHint="Search" />
+        android:queryHint="搜尋" />
 
     <Spinner
         android:id="@+id/spinner_city"
