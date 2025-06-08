@@ -32,6 +32,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -50,6 +51,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class PostProductActivity extends AppCompatActivity {
     private MaterialToolbar toolbar;
     private TextInputEditText etProductName, etImageUrl, etDescription, etAmount, etPrice;
+    private TextInputEditText etCity;
+    private AutoCompleteTextView actvCategory;
+    private AutoCompleteTextView actvTransactionMethod;
     private ImageView ivImagePreview;
     private Button btnPostProduct;
     private ProgressBar progressBar;
@@ -100,6 +104,9 @@ public class PostProductActivity extends AppCompatActivity {
         etDescription = findViewById(R.id.et_description);
         etAmount = findViewById(R.id.et_amount);
         etPrice = findViewById(R.id.et_price);
+        etCity = findViewById(R.id.et_city);
+        actvCategory = findViewById(R.id.actv_category);
+        actvTransactionMethod = findViewById(R.id.actv_transaction_method);
         ivImagePreview = findViewById(R.id.iv_image_preview);
         btnPostProduct = findViewById(R.id.btn_post_product); // <-- 修改 ID
         progressBar = findViewById(R.id.progress_bar);
@@ -115,29 +122,53 @@ public class PostProductActivity extends AppCompatActivity {
             return;
         }
 
-        // 獲取輸入內容
+        // 獲取所有輸入內容
         String name = etProductName.getText().toString().trim();
         String imageUrl = etImageUrl.getText().toString().trim();
         String description = etDescription.getText().toString().trim();
         String amountStr = etAmount.getText().toString().trim();
         String priceStr = etPrice.getText().toString().trim();
+        // 從新的 UI 元件獲取資料
+        String city = etCity.getText().toString().trim();
+        String category = actvCategory.getText().toString().trim();
+        String method = actvTransactionMethod.getText().toString().trim();
 
-        // 驗證輸入是否為空
-        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(description) || TextUtils.isEmpty(amountStr) || TextUtils.isEmpty(priceStr) || TextUtils.isEmpty(imageUrl)) {
+
+        // 更新驗證邏輯，加入對新欄位的檢查
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(description) || TextUtils.isEmpty(amountStr) ||
+                TextUtils.isEmpty(priceStr) || TextUtils.isEmpty(imageUrl) || TextUtils.isEmpty(city) ||
+                TextUtils.isEmpty(category) || TextUtils.isEmpty(method)) {
             Toast.makeText(this, "所有欄位皆為必填", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 顯示進度條，隱藏按鈕
         setLoading(true);
 
         try {
-            int amount = Integer.parseInt(amountStr);
+            // 準備好所有建構式需要的參數
+            String id = null; // ID 由 Firestore 自動生成
+            Long amount = Long.parseLong(amountStr);
             Long price = Long.parseLong(priceStr);
-            String sellerId = currentUser.getUid();
 
-//            Product product = new Product(name, price, description, amount, sellerId, imageUrl);
-//            postToFirestore(product); // <-- 修改方法名稱
+            // 移除所有寫死的預設值，現在全部從 UI 讀取
+
+            // 嚴格依照 Product 建構式的順序來建立物件：
+            // Product(String id, String name, String imageURL, String method, Long price, String city, Long amount, String category, String description)
+            Product product = new Product(
+                    id,
+                    name,
+                    imageUrl,
+                    method,     // <-- 使用 UI 變數
+                    price,
+                    city,       // <-- 使用 UI 變數
+                    amount,
+                    category,   // <-- 使用 UI 變數
+                    description
+            );
+
+            // 將建構好的 product 物件傳遞給 Firestore
+            postToFirestore(product);
+
         } catch (NumberFormatException e) {
             Toast.makeText(this, "庫存和價格必須是有效的數字", Toast.LENGTH_SHORT).show();
             setLoading(false);
@@ -145,7 +176,7 @@ public class PostProductActivity extends AppCompatActivity {
     }
 
     private void postToFirestore(Product product) { // <-- 修改方法名稱
-        db.collection("products").add(product)
+        db.collection("Products").add(product)
                 .addOnSuccessListener(documentReference -> {
                     Toast.makeText(PostProductActivity.this, "商品已成功發布！", Toast.LENGTH_SHORT).show();
                     finish();

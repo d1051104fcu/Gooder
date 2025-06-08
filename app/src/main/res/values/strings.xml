@@ -11,5 +11,7 @@
     </string-array>
 
     <string name="product_name">產品名稱</string>
+    <string name="product_category_description">選擇商品類別</string>
+    <string name="transaction_method_description">選擇交易方式</string>
 
 </resources>
