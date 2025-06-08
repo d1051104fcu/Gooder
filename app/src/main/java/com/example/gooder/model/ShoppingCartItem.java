@@ -6,14 +6,17 @@ import java.util.Objects;
 
 public class ShoppingCartItem {
     private final String ShoppingCartId;
+    private final String ProductId;
     private final String name;
     private final int price;
     private String imgId = String.valueOf(R.drawable.not_found);
     private int count;
     private boolean isChoose;
 
-    public ShoppingCartItem(String ShoppingCartId, String name, int price, String imgId, int count){
-        this.ShoppingCartId = ShoppingCartId;this.name = name;
+    public ShoppingCartItem(String ShoppingCartId, String ProductId, String name, int price, String imgId, int count){
+        this.ShoppingCartId = ShoppingCartId;
+        this.ProductId = ProductId;
+        this.name = name;
         this.price = price;
         if (!imgId.isEmpty()){
             this.imgId = imgId;
@@ -50,5 +53,8 @@ public class ShoppingCartItem {
 
     public String getShoppingCartId() {
         return ShoppingCartId;
+    }
+    public String getProductId() {
+        return ProductId;
     }
 }
