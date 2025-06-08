@@ -23,7 +23,6 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
     private List<Product> productList;
     private Context context;
 
-
     public SearchResultAdapter(Context context, List<Product> productList) {
         this.context = context;
         this.productList = productList;

@@ -1,6 +1,5 @@
 package com.example.gooder;
 
-import android.content.ClipData;
 import android.os.Bundle;
 import android.widget.SearchView;
 
@@ -44,33 +43,6 @@ public class SearchResultActivity extends AppCompatActivity {
         searchView.setIconified(false); // 처음부터 검색창 펼치기 (아이콘화 해제)
 
         String query = getIntent().getStringExtra("query"); // 초기 검색어 가져오기
-
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        db.collection("Products")
-//                .get()
-//                .addOnSuccessListener(querySnapshot -> {
-//                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-//                        String name = doc.getString("name");
-//                        String category = doc.getString("category");
-//                        String description = doc.getString("description");
-//
-//                        // 하나라도 포함되면
-//                        if ((name != null && name.toLowerCase().contains(query.toLowerCase())) ||
-//                                (category != null && category.toLowerCase().contains(query.toLowerCase())) ||
-//                                (description != null && description.toLowerCase().contains(query.toLowerCase()))) {
-//
-//
-//                            String imageURL = doc.getString("imageURL");
-//                            String method = doc.getString("transactionMethod");
-//                            Long price = doc.getLong("price");
-//                            String city = doc.getString("city");
-//                            Long amount = doc.getLong("amount");
-//
-//                            productList.add(new Product(doc.getId(), name, imageURL, method, price, city, amount, category, description));
-//                        }
-//                    }
-//                    adapter.notifyDataSetChanged();
-//                });
 
         if (query != null) {
             searchView.setQuery(query, false);

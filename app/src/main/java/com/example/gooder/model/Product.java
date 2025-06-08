@@ -23,7 +23,13 @@ public class Product {
         this.price = price;
         this.id = id;
         this.method = method;
+    }
 
+    public Product(String name, String imageURL, String method, Long price) {
+        this.name = name;
+        this.imageURL = imageURL;
+        this.method = method;
+        this.price = price;
     }
 
     public String getId() { return id; }
