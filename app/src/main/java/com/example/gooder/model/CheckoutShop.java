@@ -8,21 +8,29 @@ import androidx.annotation.NonNull;
 import java.util.List;
 
 public class CheckoutShop implements Parcelable {
-    private final String shopName;
+    private final String sellerId, shopName;
     private String tradeMode;
-    private int freight;
+    private int freight, totalPrice;
     private String address;
     private final List<CheckoutItem> checkoutItemList;
 
-    public CheckoutShop(String shopName, List<CheckoutItem> checkoutItemList){
+    public CheckoutShop(String sellerId, String shopName, List<CheckoutItem> checkoutItemList){
+        this.sellerId = sellerId;
         this.shopName = shopName;
         this.tradeMode = TradeMode.getDefaultTradeMode();
         this.freight = TradeMode.getDefaultFright();
         this.address = "";
         this.checkoutItemList = checkoutItemList;
+
+        int total = 0;
+        for (CheckoutItem item: checkoutItemList){
+            total += item.getPrice() * item.getCount();
+        }
+        this.totalPrice = total;
     }
 
     protected CheckoutShop(Parcel in) {
+        sellerId = in.readString();
         shopName = in.readString();
         checkoutItemList = in.createTypedArrayList(CheckoutItem.CREATOR);
     }
@@ -46,8 +54,13 @@ public class CheckoutShop implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(sellerId);
         dest.writeString(shopName);
         dest.writeTypedList(checkoutItemList);
+    }
+
+    public String getSellerId() {
+        return sellerId;
     }
 
     public String getShopName() {
@@ -62,6 +75,8 @@ public class CheckoutShop implements Parcelable {
 
     public int getFreight() { return freight; }
     public void setFreight(int freight) { this.freight = freight; }
+
+    public int getTotalPrice() { return totalPrice; }
 
     public List<CheckoutItem> getCheckoutItemList() {
         return checkoutItemList;

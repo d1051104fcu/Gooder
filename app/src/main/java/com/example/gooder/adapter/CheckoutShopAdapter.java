@@ -1,6 +1,8 @@
 package com.example.gooder.adapter;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,6 +75,7 @@ public class CheckoutShopAdapter extends RecyclerView.Adapter<CheckoutShopAdapte
                     holder.linearAddress.setVisibility(View.GONE);
                     holder.dividerUpAddress.setVisibility(View.GONE);
                     holder.address.setText("");
+                    checkoutShop.setAddress("");
                 } else {
                     holder.dividerUpAddress.setVisibility(View.VISIBLE);
                     holder.linearAddress.setVisibility(View.VISIBLE);
@@ -87,6 +90,23 @@ public class CheckoutShopAdapter extends RecyclerView.Adapter<CheckoutShopAdapte
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        holder.address.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                checkoutShop.setAddress(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
 
             }
         });

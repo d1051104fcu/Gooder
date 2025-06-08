@@ -9,13 +9,15 @@ import com.example.gooder.R;
 
 public class CheckoutItem implements Parcelable {
     private final String ShoppingCartId;
+    private final String productId;
     private final String name;
     private final int price;
     private String imgId = String.valueOf(R.drawable.not_found);;
     private final int count;
 
-    public CheckoutItem(String ShoppingCartId, String name, int price, String imgId, int count){
+    public CheckoutItem(String ShoppingCartId, String productId, String name, int price, String imgId, int count){
         this.ShoppingCartId = ShoppingCartId;
+        this.productId = productId;
         this.name = name;
         this.price = price;
         if (!imgId.isEmpty()){
@@ -26,6 +28,7 @@ public class CheckoutItem implements Parcelable {
 
     protected CheckoutItem(Parcel in) {
         ShoppingCartId = in.readString();
+        productId = in.readString();
         name = in.readString();
         price = in.readInt();
         imgId = in.readString();
@@ -52,6 +55,7 @@ public class CheckoutItem implements Parcelable {
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(ShoppingCartId);
+        dest.writeString(productId);
         dest.writeString(name);
         dest.writeInt(price);
         dest.writeString(imgId);
@@ -60,6 +64,10 @@ public class CheckoutItem implements Parcelable {
 
     public String getShoppingCartId() {
         return ShoppingCartId;
+    }
+
+    public String getProductId() {
+        return productId;
     }
 
     public String getName() {
