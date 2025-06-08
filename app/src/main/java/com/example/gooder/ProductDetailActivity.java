@@ -49,7 +49,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                         String category = documentSnapshot.getString("category");
                         String city = documentSnapshot.getString("city");
                         String description = documentSnapshot.getString("description");
-                        String imageUrl = documentSnapshot.getString("imageUrl");
+                        String imageURL = documentSnapshot.getString("imageURL");
                         String name = documentSnapshot.getString("name");
                         Long price = documentSnapshot.getLong("price");
                         String seller_id = documentSnapshot.getString("seller_id");
@@ -66,7 +66,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
 
                         Glide.with(this)
-                                .load(imageUrl)
+                                .load(imageURL)
                                 .into(ivImage);
                     }
                 });

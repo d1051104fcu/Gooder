@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="product_categories">
+        <item>3C電子</item>
+        <item>服飾配件</item>
+        <item>美妝保養</item>
+        <item>居家生活</item>
+        <item>圖書文具</item>
+        <item>票券代購</item>
+        <item>其他</item>
+    </string-array>
+
+    <string-array name="transaction_methods">
+        <item>面交</item>
+        <item>超商取貨</item>
+        <item>宅配/郵寄</item>
+    </string-array>
+</resources>

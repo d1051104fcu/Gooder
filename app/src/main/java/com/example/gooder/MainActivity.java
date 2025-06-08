@@ -91,8 +91,11 @@ public class MainActivity extends AppCompatActivity {
                     setCurrentFragment(settingFragment);
                 }
                 else if(itemId == R.id.menu_post){
-//                    setCurrentFragment(shopFragment);
 //                    setCurrentFragment(postFragment);
+//                    setCurrentFragment(shopFragment);
+                    // 啟動新的 PostProductActivity
+                    Intent intent = new Intent(MainActivity.this, PostProductActivity.class);
+                    startActivity(intent);
                 }
                 else if(itemId == R.id.menu_shoppingCart){
                     setCurrentFragment(shoppingCartFragment);
