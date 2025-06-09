@@ -257,7 +257,7 @@ public class HomeFragment extends Fragment {
     private void saveSearchQuery(Context context, String query) {
         SharedPreferences prefs = context.getSharedPreferences("search_prefs", Context.MODE_PRIVATE);
         Set<String> oldHistory = prefs.getStringSet("search_history", new LinkedHashSet<>());
-        // 복사본 생성 (원본을 직접 수정하지 않ㅅ음)
+        // 복사본 생성 (원본을 직접 수정하지 않음)
         Set<String> newHistory = new LinkedHashSet<>(oldHistory);
         newHistory.add(query);
         prefs.edit().putStringSet("search_history", newHistory).apply();

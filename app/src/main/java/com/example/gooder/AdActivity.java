@@ -28,7 +28,7 @@ public class AdActivity extends AppCompatActivity {
 
         // index에 따라 광고 내용 다르게 보여주기
         TextView textView = findViewById(R.id.adText);
-        textView.setText("廣告頁面號碼 : " + index);
+        textView.setText("廣告頁面號碼 : " + (index + 1) );
         // 또는 이미지, 설명 등 보여주기
     }
 }
