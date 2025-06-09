@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Gooder"
         tools:targetApi="31">
         <activity
+            android:name=".ShopActivity"
+            android:exported="false" />
+        <activity
             android:name=".PostProductActivity"
             android:exported="false" />
         <activity

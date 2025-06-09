@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 基江
         homeFragment = HomeFragment.newInstance("", "");
-        //
+
 //        shopFragment = ShopFragment.newInstance("", "");
 //        postFragment = PostFragment.newInstance("", "");
 
@@ -92,8 +92,6 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else if(itemId == R.id.menu_post){
 //                    setCurrentFragment(postFragment);
-//                    setCurrentFragment(shopFragment);
-                    // 啟動新的 PostProductActivity
                     Intent intent = new Intent(MainActivity.this, PostProductActivity.class);
                     startActivity(intent);
                 }
