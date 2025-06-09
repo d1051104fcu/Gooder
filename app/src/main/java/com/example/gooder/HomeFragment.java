@@ -121,11 +121,39 @@ public class HomeFragment extends Fragment {
                 android.R.layout.simple_dropdown_item_1line, historyList);
         searchAutoComplete.setAdapter(adapter);
 
+        searchAutoComplete.setThreshold(1); // 최소 1글자 입력 시 자동완성
+        searchAutoComplete.setAdapter(adapter);
+
+        // 1. 포커스 시 드롭다운
+        searchAutoComplete.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                searchAutoComplete.post(() -> searchAutoComplete.showDropDown());
+            }
+        });
+
+        // 자동완성 항목 클릭 시
+        searchAutoComplete.setOnItemClickListener((parent, view1, position, id) -> {
+            String selectedQuery = (String) parent.getItemAtPosition(position);
+
+            // 검색어 저장
+            saveSearchQuery(requireContext(), selectedQuery);
+
+            // 검색 결과 액티비티로 이동
+            Intent intent = new Intent(getActivity(), SearchResultActivity.class);
+            intent.putExtra("query", selectedQuery);
+            startActivity(intent);
+        });
+
         // 검색어 제출 시 저장하기
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 saveSearchQuery(requireContext(), query);
+
+                if (!historyList.contains(query)) {
+                    historyList.add(query); // 리스트에 추가
+                    adapter.notifyDataSetChanged(); // 어댑터 갱신
+                }
 
                 // 검색 결과 액티비티로 이동
                 Intent intent = new Intent(getActivity(), SearchResultActivity.class);
