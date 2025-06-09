@@ -207,11 +207,11 @@ public class HomeFragment extends Fragment {
         homeRecyclerView.setAdapter(productAdapter);
 
         // ✅ 어댑터 클릭 리스너는 여기서 한 번만!
-        productAdapter.setOnItemClickListener(product -> {
-            Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
-            intent.putExtra("productName", product.getName());
-            startActivity(intent);
-        });
+//        productAdapter.setOnItemClickListener(product -> {
+//            Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
+//            intent.putExtra("productId", product.getId());
+//            startActivity(intent);
+//        });
 
         // 선택 리스너 설정
         citySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -257,7 +257,7 @@ public class HomeFragment extends Fragment {
     private void saveSearchQuery(Context context, String query) {
         SharedPreferences prefs = context.getSharedPreferences("search_prefs", Context.MODE_PRIVATE);
         Set<String> oldHistory = prefs.getStringSet("search_history", new LinkedHashSet<>());
-        // 복사본 생성 (원본을 직접 수정하지 않음)
+        // 복사본 생성 (원본을 직접 수정하지 않ㅅ음)
         Set<String> newHistory = new LinkedHashSet<>(oldHistory);
         newHistory.add(query);
         prefs.edit().putStringSet("search_history", newHistory).apply();

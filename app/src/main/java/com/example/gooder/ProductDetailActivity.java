@@ -58,10 +58,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                         tvAmount.setText("數量： " + String.valueOf(amount));
                         tvCategory.setText("分類： " + category);
                         tvCity.setText(city);
-                        tvDescription.setText(description);
+                        tvDescription.setText("説明： " + description);
                         tvName.setText(name);
                         tvPrice.setText(String.valueOf(price) + '元');
-                        tvSellerId.setText(seller_id);
+                        tvSellerId.setText("賣家： " + seller_id);
                         tvMethod.setText(method);
 
 
