@@ -1,6 +1,8 @@
 package com.example.gooder;
 
 // 수동 추가 ViewPager2, Handler 不知道爲啥不能自動import
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
@@ -13,24 +15,18 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.os.Looper;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.example.gooder.adapter.ImageSliderAdapter;
+import com.example.gooder.adapter.ProductAdapter;
+import com.example.gooder.model.Product;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -108,8 +104,8 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 // test ---
         SearchView searchView = view.findViewById(R.id.search);
-        // 처음부터 검색창 펼치기 (아이콘화 해제)
-        searchView.setIconified(false);
+
+        searchView.setIconified(false); // 처음부터 검색창 펼치기 (아이콘화 해제)
 
         // SearchView 내부의 AutoCompleteTextView 찾기
         int autoCompleteId = searchView.getContext().getResources()
@@ -125,11 +121,39 @@ public class HomeFragment extends Fragment {
                 android.R.layout.simple_dropdown_item_1line, historyList);
         searchAutoComplete.setAdapter(adapter);
 
+        searchAutoComplete.setThreshold(1); // 최소 1글자 입력 시 자동완성
+        searchAutoComplete.setAdapter(adapter);
+
+        // 1. 포커스 시 드롭다운
+        searchAutoComplete.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                searchAutoComplete.post(() -> searchAutoComplete.showDropDown());
+            }
+        });
+
+        // 자동완성 항목 클릭 시
+        searchAutoComplete.setOnItemClickListener((parent, view1, position, id) -> {
+            String selectedQuery = (String) parent.getItemAtPosition(position);
+
+            // 검색어 저장
+            saveSearchQuery(requireContext(), selectedQuery);
+
+            // 검색 결과 액티비티로 이동
+            Intent intent = new Intent(getActivity(), SearchResultActivity.class);
+            intent.putExtra("query", selectedQuery);
+            startActivity(intent);
+        });
+
         // 검색어 제출 시 저장하기
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 saveSearchQuery(requireContext(), query);
+
+                if (!historyList.contains(query)) {
+                    historyList.add(query); // 리스트에 추가
+                    adapter.notifyDataSetChanged(); // 어댑터 갱신
+                }
 
                 // 검색 결과 액티비티로 이동
                 Intent intent = new Intent(getActivity(), SearchResultActivity.class);
@@ -143,38 +167,6 @@ public class HomeFragment extends Fragment {
                 return false;
             }
         });
-// test ---
-
-////        AutoCompleteTextView searchInput = view.findViewById(R.id.search_input);
-//        EditText searchInput = view.findViewById(R.id.search_input);
-//        Button searchButton = view.findViewById(R.id.search_button);
-
-//// 저장된 검색 기록 불러오기
-//        Set<String> historySet = getSearchHistory(requireContext());  // Set<String>
-//        List<String> historyList = new ArrayList<>(historySet);
-//
-//// 자동완성 어댑터 연결
-//        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-//                requireContext(),
-//                android.R.layout.simple_dropdown_item_1line,
-//                historyList
-//        );
-//        searchInput.setAdapter(adapter);
-
-//// 검색 버튼 클릭 시 처리
-//        searchButton.setOnClickListener(v -> {
-//            String query = searchInput.getText().toString().trim();
-//
-//            if (!query.isEmpty()) {
-//                saveSearchQuery(requireContext(), query);  // 검색어 저장
-//
-//                // 다음 화면으로 이동
-//                Intent intent = new Intent(getActivity(), SearchResultActivity.class);
-//                intent.putExtra("query", query);
-//                startActivity(intent);
-//            }
-//        });
-
 
         // ViewPager2와 어댑터 설정
         viewPager = view.findViewById(R.id.viewPager);
@@ -198,85 +190,7 @@ public class HomeFragment extends Fragment {
         };
         sliderHandler.postDelayed(sliderRunnable, 3000);
 
-        // 예: TextView[]과 ImageView[] 배열로 4개의 frame을 관리한다고 가정
 
-        TextView tv_title1 = view.findViewById(R.id.tv_title1);
-        TextView tv_title2 = view.findViewById(R.id.tv_title2);
-        TextView tv_title3 = view.findViewById(R.id.tv_title3);
-        TextView tv_title4 = view.findViewById(R.id.tv_title4);
-        ImageView iv_product1 = view.findViewById(R.id.iv_product1);
-        ImageView iv_product2 = view.findViewById(R.id.iv_product2);
-        ImageView iv_product3 = view.findViewById(R.id.iv_product3);
-        ImageView iv_product4 = view.findViewById(R.id.iv_product4);
-
-        TextView tv_method1 = view.findViewById(R.id.tv_method1);
-        TextView tv_method2 = view.findViewById(R.id.tv_method2);
-        TextView tv_method3 = view.findViewById(R.id.tv_method3);
-        TextView tv_method4 = view.findViewById(R.id.tv_method4);
-
-        TextView tv_price1 = view.findViewById(R.id.tv_price1);
-        TextView tv_price2 = view.findViewById(R.id.tv_price2);
-        TextView tv_price3 = view.findViewById(R.id.tv_price3);
-        TextView tv_price4 = view.findViewById(R.id.tv_price4);
-
-        TextView[] titles = { tv_title1, tv_title2, tv_title3, tv_title4 };
-        ImageView[] images = { iv_product1, iv_product2, iv_product3, iv_product4 };
-
-        TextView[] methods = { tv_method1, tv_method2, tv_method3, tv_method4 };
-        TextView[] prices =  { tv_price1, tv_price2, tv_price3, tv_price4 };
-
-        LinearLayout ll1 = view.findViewById(R.id.frame1);
-        LinearLayout ll2 = view.findViewById(R.id.frame2);
-        LinearLayout ll3 = view.findViewById(R.id.frame3);
-        LinearLayout ll4 = view.findViewById(R.id.frame4);
-        LinearLayout[] frames = { ll1, ll2, ll3, ll4 };
-
-        List<String> titlesList = new ArrayList<>();
-        List<String> imageUrls = new ArrayList<>();
-//        List<Long> priceList = new ArrayList<>();
-//        List<String> transactionMethodList = new ArrayList<>();
-
-//        db.collection("test_gigang2")
-//                .whereEqualTo("City", "台北")
-//                .get()
-//                .addOnSuccessListener(queryDocumentSnapshots -> {
-//                    List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
-//
-//                    for (int i = 0; i < docs.size() && i < 4; i++) {
-//                        DocumentSnapshot doc = docs.get(i);
-//                        String title = doc.getString("Title");
-//                        String imageUrl = doc.getString("ImageUrl");
-//                        String method = doc.getString("TransactionMethod");
-//                        Long price = doc.getLong("Price");
-//                        // Price
-//                        // Body
-//                        // TransactionMethod
-//                        // Category
-//
-//                        titles[i].setText(title);
-////                        titlesList.add(title);
-//                        imageUrls.add(imageUrl);
-//
-//                        methods[i].setText(method);
-//                        prices[i].setText(String.valueOf(price) + '元');
-//
-//
-//                        Glide.with(view.getContext())  // fragment 안이니까 view.getContext()
-//                                .load(imageUrl)
-//                                .into(images[i]);
-//
-//                        // 프레임 클릭 시 상세 화면 이동
-//                        int index = i; // 내부 클래스에서 사용하려면 final 또는 effectively final
-//                        frames[i].setOnClickListener(v -> {
-//                            Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
-//
-////                            intent.putExtra("title", titlesList.get(index));
-////                            intent.putExtra("imageUrl", imageUrls.get(index));
-//                            intent.putExtra("productId", doc.getId());
-//                            startActivity(intent);
-//                        });
-//                    }
-//                });
 
 //        searchView.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
 //            if (hasFocus) {
@@ -309,11 +223,32 @@ public class HomeFragment extends Fragment {
         cityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         citySpinner.setAdapter(cityAdapter);
 
+
+        RecyclerView homeRecyclerView = view.findViewById(R.id.home_recyclerView);
+        List<Product> productList = new ArrayList<>();
+        int spanCount = 2; // 한 줄에 2개씩 표시
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), spanCount);
+        homeRecyclerView.setLayoutManager(gridLayoutManager);
+
+        ProductAdapter productAdapter = new ProductAdapter(requireContext(), productList);
+        homeRecyclerView.setAdapter(productAdapter);
+
+        // ✅ 어댑터 클릭 리스너는 여기서 한 번만!
+//        productAdapter.setOnItemClickListener(product -> {
+//            Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
+//            intent.putExtra("productId", product.getId());
+//            startActivity(intent);
+//        });
+
         // 선택 리스너 설정
         citySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedCity = parent.getItemAtPosition(position).toString();
+
+                // 🔁 기존 목록 초기화
+                productList.clear();
 
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("Products")
@@ -322,74 +257,26 @@ public class HomeFragment extends Fragment {
                         .addOnSuccessListener(queryDocumentSnapshots -> {
                             List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
 
-                            // UI에 최대 4개까지만 출력
-                            for (int i = 0; i < docs.size() && i < 4; i++) {
-                                DocumentSnapshot doc = docs.get(i);
-                                String title = doc.getString("name");
+                            for (DocumentSnapshot doc : docs) {
+                                String name = doc.getString("name");
                                 String imageURL = doc.getString("imageURL");
                                 String method = doc.getString("transactionMethod");
                                 Long price = doc.getLong("price");
+                                String city = doc.getString("city");
+                                Long amount = doc.getLong("amount");
+                                String category = doc.getString("category");
+                                String description = doc.getString("description");
 
-                                titles[i].setText(title);
-                                methods[i].setText(method);
-                                prices[i].setText(String.valueOf(price) + "元");
+                                productList.add(new Product(doc.getId(), name, imageURL, method, price, city, amount, category, description));
 
-                                Glide.with(getContext()).load(imageURL).into(images[i]);
-
-//                                Glide.with(getContext()) // 또는 getActivity()
-//                                        .load(imageUrl)
-//                                        .error(R.drawable.not_found) // 실패 시 이미지
-//                                        .into(images[i]);
-
-
-                                int index = i;
-                                frames[i].setOnClickListener(v -> {
-                                    Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
-                                    intent.putExtra("productId", doc.getId());
-                                    startActivity(intent);
-                                });
                             }
+                            productAdapter.notifyDataSetChanged(); // ✅ 어댑터 갱신
                         });
 
-//                loadProductsByCity(selectedCity);
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) { }
         });
-
-//        private void loadProductsByCity(String city) {
-//            FirebaseFirestore db = FirebaseFirestore.getInstance();
-//            db.collection("test_gigang2")
-//                    .whereEqualTo("City", city) // <- 도시 필터링
-//                    .get()
-//                    .addOnSuccessListener(queryDocumentSnapshots -> {
-//                        List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
-//
-//
-//                        // UI에 최대 4개까지만 출력
-//                        for (int i = 0; i < docs.size() && i < 4; i++) {
-//                            DocumentSnapshot doc = docs.get(i);
-//                            String title = doc.getString("Title");
-//                            String imageUrl = doc.getString("ImageUrl");
-//                            String method = doc.getString("TransactionMethod");
-//                            Long price = doc.getLong("Price");
-//
-//                            titles[i].setText(title);
-//                            methods[i].setText(method);
-//                            prices[i].setText(String.valueOf(price) + "元");
-//
-//                            Glide.with(getContext()).load(imageUrl).into(images[i]);
-//
-//                            int index = i;
-//                            frames[i].setOnClickListener(v -> {
-//                                Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
-//                                intent.putExtra("productId", doc.getId());
-//                                startActivity(intent);
-//                            });
-//                        }
-//                    });
-//        }
 
         return view;
     }

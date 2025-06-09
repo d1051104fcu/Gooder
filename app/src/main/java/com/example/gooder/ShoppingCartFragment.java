@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,17 +24,17 @@ import com.example.gooder.model.CheckoutShop;
 import com.example.gooder.model.ShoppingCartItem;
 import com.example.gooder.model.ShoppingCartShop;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,7 +49,8 @@ public class ShoppingCartFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     private RecyclerView recyclerView;
-    private TextView totalPrice, cartEmpty;
+    private TextView totalPrice;
+    private RelativeLayout loading, cartEmpty;
     ShoppingCartShopAdapter shoppingCartShopAdapter;
     List<ShoppingCartShop> shoppingCartShopList = new ArrayList<>();
 
@@ -101,50 +103,49 @@ public class ShoppingCartFragment extends Fragment {
         totalPrice = view.findViewById(R.id.shoppingCart_totalPrice);
         Button toCheckout = view.findViewById(R.id.shoppingCart_toCheckout);
         cartEmpty = view.findViewById(R.id.shoppingCart_cartEmpty);
+        loading = view.findViewById(R.id.shoppingCart_loading);
 
         cartEmpty.setVisibility(View.GONE);
         setupRecycleView();
 
-        toCheckout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ArrayList<CheckoutShop> checkoutShopList = new ArrayList<>();
-                for (ShoppingCartShop shop: shoppingCartShopList){
-                    List<CheckoutItem> checkoutItemList = new ArrayList<>();
-                    for (ShoppingCartItem item: shop.getShoppingCartItemList()){
-                        if (item.isChoose()){
-                            checkoutItemList.add(new CheckoutItem(
-                                    item.getShoppingCartId(),
-                                    item.getName(),
-                                    item.getPrice(),
-                                    item.getImgId(),
-                                    item.getCount()
-                            ));
-                        }
-                    }
-
-                    if (!checkoutItemList.isEmpty()){
-                        checkoutShopList.add(new CheckoutShop(shop.getShopName(), checkoutItemList));
+        toCheckout.setOnClickListener(view1 -> {
+            ArrayList<CheckoutShop> checkoutShopList = new ArrayList<>();
+            for (ShoppingCartShop shop: shoppingCartShopList){
+                List<CheckoutItem> checkoutItemList = new ArrayList<>();
+                for (ShoppingCartItem item: shop.getShoppingCartItemList()){
+                    if (item.isChoose()){
+                        checkoutItemList.add(new CheckoutItem(
+                                item.getShoppingCartId(),
+                                item.getProductId(),
+                                item.getName(),
+                                item.getPrice(),
+                                item.getImgId(),
+                                item.getCount()
+                        ));
                     }
                 }
 
-                if (checkoutShopList.isEmpty()){
-                    Toast.makeText(getContext(), "請勾選欲結帳商品", Toast.LENGTH_SHORT).show();
-                    return;
+                if (!checkoutItemList.isEmpty()){
+                    checkoutShopList.add(new CheckoutShop(shop.getSellerId(), shop.getShopName(), checkoutItemList));
                 }
-
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("checkoutShopList", checkoutShopList);
-
-                CheckoutFragment checkoutFragment = new CheckoutFragment();
-                checkoutFragment.setArguments(bundle);
-
-                requireActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_main, checkoutFragment)
-                        .addToBackStack(null)
-                        .commit();
             }
+
+            if (checkoutShopList.isEmpty()){
+                Toast.makeText(getContext(), "請勾選欲結帳商品", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList("checkoutShopList", checkoutShopList);
+
+            CheckoutFragment checkoutFragment = new CheckoutFragment();
+            checkoutFragment.setArguments(bundle);
+
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_main, checkoutFragment)
+                    .addToBackStack(null)
+                    .commit();
         });
 
         return view;
@@ -183,86 +184,85 @@ public class ShoppingCartFragment extends Fragment {
 
     private void updateShoppingCartListAndTotalPrice(){
         if (auth.getCurrentUser() != null){
+            loading.setVisibility(View.VISIBLE);
+
             String userId = auth.getCurrentUser().getUid();
-            CollectionReference shoppingCartCollection = db.collection("Users").
-                    document(userId).collection("ShoppingCart");
+            db.collection("Users").document(userId).collection("ShoppingCart")
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        Log.i("ShoppingCart", "Document size: " + queryDocumentSnapshots.size());
 
-            shoppingCartCollection.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                Log.i("ShoppingCart", "Document size: " + queryDocumentSnapshots.size());
+                        if (queryDocumentSnapshots.isEmpty()) {
+                            setCartEmpty(true);
+                            return;
+                        } else {
+                            setCartEmpty(false);
+                        }
 
-                if (queryDocumentSnapshots.isEmpty()) {
-                    cartEmpty.setVisibility(View.VISIBLE);
-                    Toast.makeText(getContext(), "您的購物車真乾淨！！", Toast.LENGTH_SHORT).show();
-                    return;
-                } else {
-                    cartEmpty.setVisibility(View.GONE);
-                }
+                        Map<String, ShoppingCartShop> shopMap = new HashMap<>();
+                        Map<String, List<ShoppingCartItem>> tempItemMap = new HashMap<>();
+                        Set<String> sellerIds = new HashSet<>();
+                        List<DocumentSnapshot> cartDocs = queryDocumentSnapshots.getDocuments();
 
-                Map<String, ShoppingCartShop> shopMap = new HashMap<>();
-                List<DocumentSnapshot> cartDocs = queryDocumentSnapshots.getDocuments();
+                        AtomicInteger completedCount = new AtomicInteger(0);
+                        int totalCount = cartDocs.size();
 
-                AtomicInteger completedCount = new AtomicInteger(0);
-                int totalCount = cartDocs.size();
+                        for (DocumentSnapshot doc : cartDocs) {
+                            String shoppingCartId = doc.getId();
+                            String productId = doc.getString("product_id");
+                            int amount = doc.getLong("amount").intValue();
+                            Log.i("ShoppingCart", "productId: " + productId + " amount: " + amount);
 
-                for (DocumentSnapshot doc : cartDocs) {
-                    String shoppingCartId = doc.getId();
-                    String productId = doc.getString("product_id");
-                    int amount = doc.getLong("amount").intValue();
-                    Log.i("ShoppingCart", "productId: " + productId + " amount: " + amount);
+                            db.collection("Products").document(productId)
+                                    .get().addOnSuccessListener(productDoc -> {
+                                        if (productDoc.exists()) {
+                                            String name = productDoc.getString("name");
+                                            int price = Objects.requireNonNull(productDoc.getLong("price")).intValue();
+                                            String imgId = productDoc.getString("imageURL");
+                                            String sellerId = productDoc.getString("seller_id");
+                                            Log.i("ShoppingCart", "sellerId: " + sellerId + " name: " + name + " price: " + price);
 
-                    db.collection("Products").document(productId)
-                            .get().addOnSuccessListener(productDoc -> {
-                                if (productDoc.exists()) {
-                                    String name = productDoc.getString("name");
-                                    int price = Objects.requireNonNull(productDoc.getLong("price")).intValue();
-                                    String imgId = productDoc.getString("imageURL");
-                                    String sellerId = productDoc.getString("seller_id");
-                                    Log.i("ShoppingCart", "sellerId: " + sellerId + " name: " + name + " price: " + price);
+                                            ShoppingCartItem item = new ShoppingCartItem(shoppingCartId, productId, name, price, imgId, amount);
+                                            tempItemMap.computeIfAbsent(sellerId, k -> new ArrayList<>()).add(item);
 
-                                    ShoppingCartItem item = new ShoppingCartItem(shoppingCartId, name, price, imgId, amount);
+                                            // 若尚未查過這個 sellerId 的名稱
+                                            if (!shopMap.containsKey(sellerId) && !sellerIds.contains(sellerId)) {
+                                                sellerIds.add(sellerId);
+                                                getShopName(sellerId, shopName -> {
+                                                    ShoppingCartShop shop = new ShoppingCartShop(shopName, sellerId, new ArrayList<>());
+                                                    shopMap.put(sellerId, shop);
 
-                                    if (!shopMap.containsKey(sellerId)) {
-                                        getShopName(sellerId, shopName -> {
-                                            ShoppingCartShop shop = new ShoppingCartShop(
-                                                    shopName,
-                                                    sellerId,
-                                                    new ArrayList<>()
-                                            );
-                                            shop.getShoppingCartItemList().add(item);
-                                            shopMap.put(sellerId, shop);
+                                                    // 把之前存的商品加入
+                                                    if (tempItemMap.containsKey(sellerId)) {
+                                                        shop.getShoppingCartItemList().addAll(tempItemMap.get(sellerId));
+                                                    }
 
-                                            Log.i("ShoppingCart", "shopName: " + shopName);
+                                                    // 當所有商品都完成後才更新 UI
+                                                    if (completedCount.incrementAndGet() == totalCount) {
+                                                        shoppingCartShopList.clear();
+                                                        shoppingCartShopList.addAll(shopMap.values());
+                                                        shoppingCartShopAdapter.notifyDataSetChanged();
+                                                        updateTotalPrice();
+                                                        loading.setVisibility(View.GONE);
+                                                    }
+                                                });
+                                            } else {
+                                                // 已經有 shop 了，直接加 item
+                                                if (shopMap.containsKey(sellerId)) {
+                                                    shopMap.get(sellerId).getShoppingCartItemList().add(item);
+                                                }
 
-                                            Log.i("ShoppingCart", "shopMap: " + shopMap);
-                                            // 所有 Products 查詢都完成後，更新 UI
-                                            if (completedCount.incrementAndGet() == totalCount) {
-                                                shoppingCartShopList.clear();
-                                                shoppingCartShopList.addAll(shopMap.values());
-
-                                                // 更新 RecyclerView 或其他 UI
-                                                shoppingCartShopAdapter.notifyDataSetChanged();
-                                                updateTotalPrice();
-
-                                                Log.i("ShoppingCart", "shopMap2: " + shopMap);
+                                                if (completedCount.incrementAndGet() == totalCount) {
+                                                    shoppingCartShopList.clear();
+                                                    shoppingCartShopList.addAll(shopMap.values());
+                                                    shoppingCartShopAdapter.notifyDataSetChanged();
+                                                    updateTotalPrice();
+                                                    loading.setVisibility(View.GONE);
+                                                }
                                             }
-                                        });
-                                    } else {
-                                        shopMap.get(sellerId).getShoppingCartItemList().add(item);
-
-                                        Log.i("ShoppingCart", "shopMap: " + shopMap);
-                                        if (completedCount.incrementAndGet() == totalCount) {
-                                            shoppingCartShopList.clear();
-                                            shoppingCartShopList.addAll(shopMap.values());
-
-                                            shoppingCartShopAdapter.notifyDataSetChanged();
-                                            updateTotalPrice();
-
-                                            Log.i("ShoppingCart", "shopMap3: " + shopMap);
                                         }
-                                    }
-                                }
-                            });
-                }
+                                    });
+                        }
             });
 
         }else {
@@ -272,7 +272,14 @@ public class ShoppingCartFragment extends Fragment {
         }
     }
 
+    // Map<uid, shopName>
+    Map<String, String> shopNameCache = new HashMap<>();
     private void getShopName(String uid, ShopNameCallback callback) {
+        if (shopNameCache.containsKey(uid)){
+            callback.onShopNameLoaded(shopNameCache.get(uid));
+            return;
+        }
+
         db.collection("Users").document(uid).get()
                 .addOnSuccessListener(doc -> {
                     if (doc.exists()) {
@@ -282,9 +289,7 @@ public class ShoppingCartFragment extends Fragment {
                         callback.onShopNameLoaded("我不告訴你 略略");
                     }
                 })
-                .addOnFailureListener(e -> {
-                    callback.onShopNameLoaded("窩不知搗");
-                });
+                .addOnFailureListener(e -> callback.onShopNameLoaded("窩不知搗"));
     }
 
 
@@ -300,11 +305,13 @@ public class ShoppingCartFragment extends Fragment {
         totalPrice.setText("$ " + total);
     }
 
+    /*
     private List<ShoppingCartItem> copyShoppingCartItemList(List<ShoppingCartItem> shoppingCartItemList){
         List<ShoppingCartItem> newList = new ArrayList<>();
         for (ShoppingCartItem item: shoppingCartItemList){
             newList.add(new ShoppingCartItem(
                     item.getShoppingCartId(),
+                    item.getProductId(),
                     item.getName(),
                     item.getPrice(),
                     item.getImgId(),
@@ -313,12 +320,12 @@ public class ShoppingCartFragment extends Fragment {
         }
         return newList;
     }
+    */
 
     private void setCartEmpty(boolean visibility){
         if (visibility) {
             cartEmpty.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
-            Toast.makeText(getContext(), "您的購物車真乾淨！！", Toast.LENGTH_SHORT).show();
         } else {
             cartEmpty.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);

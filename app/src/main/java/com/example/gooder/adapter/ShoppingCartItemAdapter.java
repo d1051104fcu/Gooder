@@ -1,5 +1,6 @@
 package com.example.gooder.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,18 +17,25 @@ import com.bumptech.glide.Glide;
 import com.example.gooder.R;
 import com.example.gooder.listener.OnItemCheckChangedListener;
 import com.example.gooder.model.ShoppingCartItem;
-import com.google.firebase.Firebase;
-import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartItemAdapter.ViewHolder> {
     List<ShoppingCartItem> shoppingCartItemList;
     private OnItemCheckChangedListener listener;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+
+    // Map<itemId, maxAmount>
+    Map<String, Integer> amountMap = new HashMap<>();
+
 
     public ShoppingCartItemAdapter(List<ShoppingCartItem> list, OnItemCheckChangedListener listener){
         this.shoppingCartItemList = list;
@@ -38,6 +47,7 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_shopping_cart_item, parent, false);
+        getMaxAmount();
         return new ViewHolder(view);
     }
 
@@ -69,32 +79,68 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
             //holder.itemView.post(() -> notifyItemChanged(position));
         });
 
+        String uid = Objects.requireNonNull(auth.getCurrentUser()).getUid();
         holder.plus.setOnClickListener(v -> {
-            shoppingCartItem.setCount(shoppingCartItem.getCount() + 1);
-            holder.productCount.setText(String.valueOf(shoppingCartItem.getCount()));
+            String productId = shoppingCartItem.getProductId();
+            String shoppingCartIdId = shoppingCartItem.getShoppingCartId();
 
-            if (listener != null) {
-                listener.onItemCheckChangedListener();
+            if (shoppingCartItem.getCount() >= amountMap.getOrDefault(productId, 1)){
+                Toast.makeText(holder.itemView.getContext(), "已達商品剩餘上限", Toast.LENGTH_SHORT).show();
+            }else {
+                db.collection("Users").document(uid).collection("ShoppingCart").document(shoppingCartIdId)
+                        .update("amount", FieldValue.increment(1))
+                        .addOnSuccessListener(task -> {
+                            shoppingCartItem.setCount(shoppingCartItem.getCount() + 1);
+                            holder.productCount.setText(String.valueOf(shoppingCartItem.getCount()));
+
+                            if (listener != null) {
+                                listener.onItemCheckChangedListener();
+                            }
+
+                            Log.i("ShoppingCart", "Item plus");
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("ShoppingCart", "Item plus failed" + e.getMessage());
+                        });
             }
         });
 
         holder.minus.setOnClickListener(v -> {
+            String shoppingCartIdId = shoppingCartItem.getShoppingCartId();
+
             if (shoppingCartItem.getCount() > 1) {
-                shoppingCartItem.setCount(shoppingCartItem.getCount() - 1);
-                holder.productCount.setText(String.valueOf(shoppingCartItem.getCount()));
+                db.collection("Users").document(uid).collection("ShoppingCart").document(shoppingCartIdId)
+                        .update("amount", FieldValue.increment(-1))
+                        .addOnSuccessListener(task -> {
+                            shoppingCartItem.setCount(shoppingCartItem.getCount() - 1);
+                            holder.productCount.setText(String.valueOf(shoppingCartItem.getCount()));
 
-                if (listener != null) {
-                    listener.onItemCheckChangedListener();
-                }
+                            if (listener != null) {
+                                listener.onItemCheckChangedListener();
+                            }
+
+                            Log.i("ShoppingCart", "Item minus");
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("ShoppingCart", "Item minus failed" + e.getMessage());
+                        });
             } else {
-                // Need to fix: Remove from firebase
-                holder.itemView.post(() -> notifyItemChanged(position));
-                shoppingCartItemList.remove(position);
-                notifyItemRemoved(position);
+                db.collection("Users").document(uid).collection("ShoppingCart").document(shoppingCartIdId)
+                        .delete()
+                        .addOnSuccessListener(task -> {
+                            holder.itemView.post(() -> notifyItemChanged(position));
+                            shoppingCartItemList.remove(position);
+                            notifyItemRemoved(position);
 
-                if (listener != null) {
-                    listener.onItemCheckChangedListener();
-                }
+                            if (listener != null) {
+                                listener.onItemCheckChangedListener();
+                            }
+
+                            Log.i("ShoppingCart", "Item removed");
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("ShoppingCart", "Item remove failed" + e.getMessage());
+                        });
             }
         });
     }
@@ -128,6 +174,20 @@ public class ShoppingCartItemAdapter extends RecyclerView.Adapter<ShoppingCartIt
     public void updateData(List<ShoppingCartItem> newList) {
         this.shoppingCartItemList = newList;
         notifyDataSetChanged();
+    }
+
+    public void getMaxAmount(){
+        for (ShoppingCartItem item: shoppingCartItemList){
+            String productId = item.getProductId();
+            if (amountMap.containsKey(productId)) continue;
+            db.collection("Products").document(productId)
+                    .get().addOnSuccessListener(doc -> {
+                        int maxAmount = Objects.requireNonNull(doc.getLong("amount")).intValue();
+                        amountMap.put(productId, maxAmount);
+
+                        Log.i("ShoppingCart", "productId: " + productId + " maxAmount: " + maxAmount);
+                    });
+        }
     }
 
     /*
