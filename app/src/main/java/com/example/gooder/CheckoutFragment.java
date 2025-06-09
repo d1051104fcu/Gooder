@@ -143,14 +143,20 @@ public class CheckoutFragment extends Fragment {
                                             Log.d("Checkout", "Add Order_Products Successfully!: " + task1.getId());
 
                                             // Delete ShoppingCart
-                                            db.collection("Users").document(uid).collection("ShoppingCart").document(item.getShoppingCartId())
-                                                    .delete()
-                                                    .addOnSuccessListener(task2 -> {
-                                                        completedTaskCount.getAndIncrement();
-                                                        checkIfCheckComplete(finalExpectedTaskCount, completedTaskCount);
-                                                        Log.d("Checkout", "Delete ShoppingCart Successfully! " + item.getShoppingCartId());
-                                                    })
-                                                    .addOnFailureListener(e -> Log.w("Checkout", "Error deleting document", e));
+                                            if (item.getShoppingCartId().isEmpty()){
+                                                // 直接購買
+                                                completedTaskCount.getAndIncrement();
+                                                checkIfCheckComplete(finalExpectedTaskCount, completedTaskCount);
+                                            }else {
+                                                db.collection("Users").document(uid).collection("ShoppingCart").document(item.getShoppingCartId())
+                                                        .delete()
+                                                        .addOnSuccessListener(task2 -> {
+                                                            completedTaskCount.getAndIncrement();
+                                                            checkIfCheckComplete(finalExpectedTaskCount, completedTaskCount);
+                                                            Log.d("Checkout", "Delete ShoppingCart Successfully! " + item.getShoppingCartId());
+                                                        })
+                                                        .addOnFailureListener(e -> Log.w("Checkout", "Error deleting document", e));
+                                            }
 
                                             // Update Products amount
                                             db.collection("Products").document(item.getProductId())
@@ -251,7 +257,7 @@ public class CheckoutFragment extends Fragment {
     private void navToHomeFragment(){
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_main, new ShoppingCartFragment())
+                .replace(R.id.fragment_main, new HomeFragment())
                 .commit();
     }
 }
