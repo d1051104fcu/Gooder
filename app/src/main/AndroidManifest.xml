@@ -16,6 +16,9 @@
             android:name=".AdActivity"
             android:exported="false" />
         <activity
+            android:name=".ShopActivity"
+            android:exported="false" />
+        <activity
             android:name=".PostProductActivity"
             android:exported="false" />
         <activity

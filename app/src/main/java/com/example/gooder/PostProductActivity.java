@@ -65,7 +65,7 @@ public class PostProductActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post_product); // <-- 修改為新的 layout 檔名
+        setContentView(R.layout.activity_post_product);
 
         // 初始化 Firebase
         db = FirebaseFirestore.getInstance();
@@ -74,7 +74,6 @@ public class PostProductActivity extends AppCompatActivity {
         // 綁定 UI
         bindViews();
 
-        // 設定 Toolbar
         toolbar.setNavigationOnClickListener(v -> finish());
 
         // 監聽圖片 URL 輸入，並使用 Glide 載入預覽
@@ -94,11 +93,11 @@ public class PostProductActivity extends AppCompatActivity {
         });
 
         // 設定提交按鈕的點擊事件
-        btnPostProduct.setOnClickListener(v -> attemptToPostProduct()); // <-- 修改方法名稱
+        btnPostProduct.setOnClickListener(v -> attemptToPostProduct());
     }
 
     private void bindViews() {
-        toolbar = findViewById(R.id.toolbar_post_product); // <-- 修改 ID
+        toolbar = findViewById(R.id.toolbar_post_product);
         etProductName = findViewById(R.id.et_product_name);
         etImageUrl = findViewById(R.id.et_image_url);
         etDescription = findViewById(R.id.et_description);
@@ -108,16 +107,18 @@ public class PostProductActivity extends AppCompatActivity {
         actvCategory = findViewById(R.id.actv_category);
         actvTransactionMethod = findViewById(R.id.actv_transaction_method);
         ivImagePreview = findViewById(R.id.iv_image_preview);
-        btnPostProduct = findViewById(R.id.btn_post_product); // <-- 修改 ID
+        btnPostProduct = findViewById(R.id.btn_post_product);
         progressBar = findViewById(R.id.progress_bar);
     }
 
-    private void attemptToPostProduct() { // <-- 修改方法名稱
-        // 檢查使用者是否登入
+    private void attemptToPostProduct() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        String uid = currentUser.getUid();
+        String pid = db.collection("Products").document().getId();
+        // 檢查使用者是否登入
         if (currentUser == null) {
             Toast.makeText(this, "請先登入", Toast.LENGTH_SHORT).show();
-            // 可以導向到 LoginActivity
+            // 跳轉到 LoginActivity，但我們能進到這頁就是已登入的狀態
             // startActivity(new Intent(this, LoginActivity.class));
             return;
         }
@@ -128,11 +129,9 @@ public class PostProductActivity extends AppCompatActivity {
         String description = etDescription.getText().toString().trim();
         String amountStr = etAmount.getText().toString().trim();
         String priceStr = etPrice.getText().toString().trim();
-        // 從新的 UI 元件獲取資料
         String city = etCity.getText().toString().trim();
         String category = actvCategory.getText().toString().trim();
         String method = actvTransactionMethod.getText().toString().trim();
-
 
         // 更新驗證邏輯，加入對新欄位的檢查
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(description) || TextUtils.isEmpty(amountStr) ||
@@ -146,23 +145,21 @@ public class PostProductActivity extends AppCompatActivity {
 
         try {
             // 準備好所有建構式需要的參數
-            String id = null; // ID 由 Firestore 自動生成
+            String seller_id = uid; // ID 由 Firestore 自動生成
             Long amount = Long.parseLong(amountStr);
             Long price = Long.parseLong(priceStr);
-
-            // 移除所有寫死的預設值，現在全部從 UI 讀取
 
             // 嚴格依照 Product 建構式的順序來建立物件：
             // Product(String id, String name, String imageURL, String method, Long price, String city, Long amount, String category, String description)
             Product product = new Product(
-                    id,
+                    seller_id,
                     name,
                     imageUrl,
-                    method,     // <-- 使用 UI 變數
+                    method,
                     price,
-                    city,       // <-- 使用 UI 變數
+                    city,
                     amount,
-                    category,   // <-- 使用 UI 變數
+                    category,
                     description
             );
 
@@ -175,7 +172,7 @@ public class PostProductActivity extends AppCompatActivity {
         }
     }
 
-    private void postToFirestore(Product product) { // <-- 修改方法名稱
+    private void postToFirestore(Product product) {
         db.collection("Products").add(product)
                 .addOnSuccessListener(documentReference -> {
                     Toast.makeText(PostProductActivity.this, "商品已成功發布！", Toast.LENGTH_SHORT).show();

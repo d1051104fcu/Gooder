@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 //    private Fragment shopFragment;
 //    private Fragment postFragment;
     private Fragment shoppingCartFragment;
+    private Fragment checkoutFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 基江
         homeFragment = HomeFragment.newInstance("", "");
-        //
+
 //        shopFragment = ShopFragment.newInstance("", "");
 //        postFragment = PostFragment.newInstance("", "");
 
@@ -73,7 +74,17 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences myPrefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         boolean isLogin = myPrefs.getBoolean("isLogin", false);
-        if (isLogin) {
+        String targetFragment = getIntent().getStringExtra("targetFragment");
+        if (targetFragment != null) {
+            if (targetFragment.equals("checkout")) {
+                bottomNav.setSelectedItemId(R.id.menu_shoppingCart);
+
+                Bundle bundle = getIntent().getBundleExtra("checkoutBundle");
+                CheckoutFragment checkoutFragment = new CheckoutFragment();
+                checkoutFragment.setArguments(bundle);
+                setCurrentFragment(checkoutFragment);
+            }
+        }else if (isLogin) {
             setCurrentFragment(homeFragment);
         } else {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
@@ -92,8 +103,6 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else if(itemId == R.id.menu_post){
 //                    setCurrentFragment(postFragment);
-//                    setCurrentFragment(shopFragment);
-                    // 啟動新的 PostProductActivity
                     Intent intent = new Intent(MainActivity.this, PostProductActivity.class);
                     startActivity(intent);
                 }

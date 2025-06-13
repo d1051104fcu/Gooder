@@ -53,7 +53,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                         String name = documentSnapshot.getString("name");
                         Long price = documentSnapshot.getLong("price");
                         String seller_id = documentSnapshot.getString("seller_id");
-                        String method = documentSnapshot.getString("method");
+                        String method = documentSnapshot.getString("transactionMethod");
 
                         tvAmount.setText("數量： " + String.valueOf(amount));
                         tvCategory.setText("分類： " + category);
