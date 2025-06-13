@@ -260,7 +260,7 @@ public class HomeFragment extends Fragment {
                             for (DocumentSnapshot doc : docs) {
                                 String name = doc.getString("name");
                                 String imageURL = doc.getString("imageURL");
-                                String method = doc.getString("transactionMethod");
+                                String method = doc.getString("method");
                                 Long price = doc.getLong("price");
                                 String city = doc.getString("city");
                                 Long amount = doc.getLong("amount");

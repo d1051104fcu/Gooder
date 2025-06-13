@@ -70,7 +70,7 @@ public class SearchResultActivity extends AppCompatActivity {
                                     (description != null && description.toLowerCase().contains(query.toLowerCase()))) {
 
                                 String imageURL = doc.getString("imageURL");
-                                String method = doc.getString("transactionMethod");
+                                String method = doc.getString("method");
                                 Long price = doc.getLong("price");
                                 String city = doc.getString("city");
                                 Long amount = doc.getLong("amount");
