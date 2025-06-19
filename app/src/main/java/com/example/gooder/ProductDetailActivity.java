@@ -57,12 +57,12 @@ public class ProductDetailActivity extends AppCompatActivity {
 
                         tvAmount.setText("數量： " + String.valueOf(amount));
                         tvCategory.setText("分類： " + category);
-                        tvCity.setText(city);
+                        tvCity.setText("城市： " + city);
                         tvDescription.setText("説明： " + description);
                         tvName.setText(name);
-                        tvPrice.setText(String.valueOf(price) + '元');
+                        tvPrice.setText("價格： "+ String.valueOf(price) + '元');
                         tvSellerId.setText("賣家： " + seller_id);
-                        tvMethod.setText(method);
+                        tvMethod.setText("交易方式： " + method);
 
 
                         Glide.with(this)

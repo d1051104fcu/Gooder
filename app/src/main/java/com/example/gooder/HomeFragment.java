@@ -1,6 +1,7 @@
 package com.example.gooder;
 
 // 수동 추가 ViewPager2, Handler 不知道爲啥不能自動import
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -43,12 +44,8 @@ import java.util.Set;
  */
 public class HomeFragment extends Fragment {
 
-    // FireBase => for four frames in GridLayout
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-//    FrameLayout[] frames = new FrameLayout[4];
-    //
 
-    // advertisement => ViewPager2
     private ViewPager2 viewPager;
     private Handler sliderHandler = new Handler();
     private Runnable sliderRunnable;
@@ -124,7 +121,7 @@ public class HomeFragment extends Fragment {
         searchAutoComplete.setThreshold(1); // 최소 1글자 입력 시 자동완성
         searchAutoComplete.setAdapter(adapter);
 
-        // 1. 포커스 시 드롭다운
+        // 포커스 시 드롭다운
         searchAutoComplete.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 searchAutoComplete.post(() -> searchAutoComplete.showDropDown());
@@ -199,6 +196,10 @@ public class HomeFragment extends Fragment {
         RecyclerView homeRecyclerView = view.findViewById(R.id.home_recyclerView);
         List<Product> productList = new ArrayList<>();
         int spanCount = 2; // 한 줄에 2개씩 표시
+// test
+//        DividerItemDecoration divider = new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
+//        homeRecyclerView.addItemDecoration(divider);
+// test
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), spanCount);
         homeRecyclerView.setLayoutManager(gridLayoutManager);
