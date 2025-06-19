@@ -61,7 +61,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     @Override
     public void onBindViewHolder(ProductViewHolder holder, int position) {
         Product product = productList.get(position);
-//        holder.imageView.setImageResource(product.getImageURL());
+
         holder.title.setText(product.getName());
         holder.method.setText(product.getMethod());
         holder.price.setText(String.valueOf(product.getPrice() + " 元"));
@@ -76,11 +76,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             context.startActivity(intent);
         });
 
-//        holder.itemView.setOnClickListener(v -> {
-//            if (listener != null) {
-//                listener.onItemClick(product); // 클릭 이벤트 전달
-//            }
-//        });
     }
 
     @Override

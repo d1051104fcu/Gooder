@@ -59,9 +59,6 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
                 .load(product.getImageURL())
                 .into(holder.imageView);
 
-        // 여기서 데이터 바인딩 (예: TextView, ImageView)
-//        holder.textTitle.setText(product.getName());
-
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ProductDetailActivity.class);
             intent.putExtra("productId", product.getId()); // 🔹 ID 전달

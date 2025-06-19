@@ -102,7 +102,7 @@ public class HomeFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-// test ---
+
         SearchView searchView = view.findViewById(R.id.search);
 
         searchView.setIconified(false); // 처음부터 검색창 펼치기 (아이콘화 해제)
@@ -190,34 +190,6 @@ public class HomeFragment extends Fragment {
         };
         sliderHandler.postDelayed(sliderRunnable, 3000);
 
-
-
-//        searchView.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
-//            if (hasFocus) {
-//                recyclerView.setVisibility(View.VISIBLE);
-//                loadSearchHistoryAndShow();
-//            } else {
-//                recyclerView.setVisibility(View.GONE);
-//            }
-//        });
-//
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                saveSearchQuery(query);
-//                recyclerView.setVisibility(View.GONE);
-//                // 실제 검색 동작 수행
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                // 텍스트 변화 시에도 검색 기록 필터링 가능
-//                filterSearchHistory(newText);
-//                return false;
-//            }
-//        });
-
         Spinner citySpinner = view.findViewById(R.id.spinner_city);
         ArrayAdapter<CharSequence> cityAdapter = ArrayAdapter.createFromResource(requireContext(), R.array.city_array, android.R.layout.simple_spinner_item);
         cityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -234,20 +206,13 @@ public class HomeFragment extends Fragment {
         ProductAdapter productAdapter = new ProductAdapter(requireContext(), productList);
         homeRecyclerView.setAdapter(productAdapter);
 
-        // ✅ 어댑터 클릭 리스너는 여기서 한 번만!
-//        productAdapter.setOnItemClickListener(product -> {
-//            Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
-//            intent.putExtra("productId", product.getId());
-//            startActivity(intent);
-//        });
-
         // 선택 리스너 설정
         citySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedCity = parent.getItemAtPosition(position).toString();
 
-                // 🔁 기존 목록 초기화
+                // 기존 목록 초기화
                 productList.clear();
 
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
